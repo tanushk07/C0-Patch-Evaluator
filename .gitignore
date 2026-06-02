@@ -1,0 +1,40 @@
+# CMake build directories
+build/
+cmake-build-*/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+
+# Visual Studio / MSVC generated files
+.vs/
+*.sln
+*.slnx
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.opensdf
+*.sdf
+*.suo
+*.user
+*.ilk
+*.pdb
+*.idb
+*.obj
+*.exe
+*.lib
+*.dll
+
+# JetBrains local project files
+.idea/
+
+# Generated mesh outputs
+Flat_Patch.obj
+Nagata_Patch.obj
+
+# OS files
+Thumbs.db
+.DS_Store
