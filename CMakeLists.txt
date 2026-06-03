@@ -10,6 +10,7 @@ set(C0EVAL_SOURCES
         Utils/Vector3.h
         Utils/MakeSphereMesh.h
         Utils/Mesh.h
+        Utils/ErrorStats.h
 )
 
 add_executable(C0Eval ${C0EVAL_SOURCES})

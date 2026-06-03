@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include <iostream>
 #include <vector>
+
+#include "ErrorStats.h"
 #include "MakeSphereMesh.h"
 
 using namespace std;
@@ -87,50 +89,16 @@ public:
              << ", " << mesh.triangles.size() << " triangles, "
              << sampleN << " samples/edge per triangle)\n";
 
-        float  maxFlat = 0, maxNagata = 0;
-        double sumFlat = 0, sumNagata = 0;   // double: many samples accumulate, float drifts
-        long long count = 0;
+        ErrorStats stats = Evaluator::MeasureError(mesh,distToSurface,sampleN);
 
-        for (const Tri& tri : mesh.triangles)
-        {
-            vector<Vector3> verts = {mesh.vertices[tri.a], mesh.vertices[tri.b], mesh.vertices[tri.c]};
-            vector<Vector3> norms = {mesh.normals[tri.a],  mesh.normals[tri.b],  mesh.normals[tri.c]};
+        cout << "Samples:           " << stats.samples << endl;
+        cout << "Max flat error:    " << stats.maxFlat << endl;
+        cout << "Max Nagata error:  " << stats.maxNagata << endl;
+        cout << "Avg flat error:    " << stats.avgFlat << endl;
+        cout << "Avg Nagata error:  " << stats.avgNagata << endl;
+        cout << "Improvement ratio: " << stats.ratio << "x  (scale-invariant)\n";
 
-            // skip zero-area (pole) triangles so we measure exactly what gets rendered
-            float area2 = ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
-            if (area2 < 1e-6f) continue;
-
-            coefficients c = Evaluator::MakeCoefficients(verts, norms);
-
-            for (int j = 0; j <= sampleN; j++)
-            {
-                float zeta = static_cast<float>(j) / sampleN;
-                for (int i = 0; i <= j; i++)
-                {
-                    float eta = static_cast<float>(i) / sampleN;
-
-                    float errN = std::abs(Evaluator::EvalPatch(c, eta, zeta).length() - distToSurface);
-                    float errF = std::abs(Evaluator::EvalFlat(verts, eta, zeta).length() - distToSurface);
-
-                    maxNagata = std::max(maxNagata, errN);
-                    maxFlat   = std::max(maxFlat,   errF);
-                    sumNagata += errN;
-                    sumFlat   += errF;
-                    count++;
-                }
-            }
-        }
-
-        float ratio = (maxNagata > 1e-10f) ? maxFlat / maxNagata : 0;
-
-        cout << "Samples:           " << count << endl;
-        cout << "Max flat error:    " << maxFlat << endl;
-        cout << "Max Nagata error:  " << maxNagata << endl;
-        cout << "Avg flat error:    " << (count ? sumFlat / count : 0) << endl;
-        cout << "Avg Nagata error:  " << (count ? sumNagata / count : 0) << endl;
-        cout << "Improvement ratio: " << ratio << "x  (scale-invariant)\n";
-
-        bool pass = (maxNagata < maxFlat);
+        bool pass = (stats.maxNagata < stats.maxFlat);
         cout << "  Nagata < flat?     " << (pass ? "PASS" : "FAIL") << "\n";
         return pass;
     }

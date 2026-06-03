@@ -8,6 +8,7 @@ using namespace std;
 inline constexpr float TOL = 1e-5f;
 inline constexpr float pi = 3.14159265358979323846f;
 
+struct ErrorStats;
 struct Mesh;
 
 struct coefficients
@@ -22,10 +23,10 @@ class Evaluator
     static coefficients MakeCoefficients( const vector<Vector3>& vertices, const vector<Vector3>& normals);
     static Vector3 EvalPatch(const coefficients& c, float eta, float zeta);
     static Vector3 EvalNormal(const coefficients& c, float eta, float zeta);
-    static Vector3 EvalFlat(std::vector<Vector3>& verts, float eta, float zeta);
+    static Vector3 EvalFlat(const std::vector<Vector3>& verts, float eta, float zeta);
     static void WriteFlatObj(const Mesh& sphereMesh, const char* filename);
     static void WriteNagataObj(const Mesh& sphereMesh, const char* filename, int N);
-    static pair<float, float> MeasureError(const Mesh& Mesh, float radius, int N);
+    static ErrorStats MeasureError(const Mesh& Mesh, float distToSurface, int N);
     static void RunSimplificationExperiment();
 };
 

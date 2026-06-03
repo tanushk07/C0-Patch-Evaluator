@@ -2,15 +2,17 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include "Vector3.h"
 #include <utility>
 #include <fstream>
+#include "ErrorStats.h"
 #include "MakeSphereMesh.h"
 using namespace std;
 
 Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd)
 {
     float cs = nStart.dot(nEnd);
-    if (std::abs(cs) > 1.0f - 1e-6f) return Vector3(0, 0, 0);
+    if (std::abs(cs) > 1.0f - 1e-6f) return {0, 0, 0};
 
     float a = nStart.dot(d);
     float b = nEnd.dot(d);
@@ -50,7 +52,7 @@ Vector3 Evaluator::EvalNormal(const coefficients& c, float eta, float zeta)
     return (dEta.cross(dZeta)).normalize();
 }
 
-Vector3 Evaluator::EvalFlat(vector<Vector3>& verts, float eta, float zeta)
+Vector3 Evaluator::EvalFlat(const vector<Vector3>& verts, float eta, float zeta)
 {
     return verts[0] + (verts[1] - verts[0]) * zeta + (verts[2] - verts[1]) * eta;
 }
@@ -126,13 +128,21 @@ void Evaluator::WriteNagataObj( const Mesh& Mesh, const char * filename, int N)
 
 }
 
-pair<float,float> Evaluator::MeasureError(const Mesh &Mesh, float radius, int N)
+ErrorStats Evaluator::MeasureError(const Mesh &Mesh, float distToSurface, int N)
 {
-    float maxFlat =0, maxNagata = 0;
+    float  maxFlat = 0, maxNagata = 0;
+    double sumFlat = 0, sumNagata = 0;   // double: many samples accumulate, float drifts
+    long long count = 0;
+    
     for (auto T: Mesh.triangles)
     {
         vector<Vector3> verts = {Mesh.vertices[T.a], Mesh.vertices[T.b], Mesh.vertices[T.c]};
         vector<Vector3> norms = {Mesh.normals[T.a], Mesh.normals[T.b], Mesh.normals[T.c]};
+        
+        // skip zero-area (pole) triangles so we measure exactly what gets rendered
+        float area2 = ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
+        if (area2 < 1e-6f) continue;
+        
         coefficients c = MakeCoefficients(verts, norms);
         for (int j = 0; j <= N; j++)
         {
@@ -144,12 +154,28 @@ pair<float,float> Evaluator::MeasureError(const Mesh &Mesh, float radius, int N)
                 Vector3 pN = EvalPatch(c, eta, zeta);
                 Vector3 pF = EvalFlat(verts, eta, zeta);
                 
-                maxNagata  = max(maxNagata, abs(pN.length() - radius));
-                maxFlat = max(maxFlat, abs(pF.length() - radius));
+                count++;
+                sumFlat += pF.length() - distToSurface;
+                sumNagata += pN.length() - distToSurface;
+                maxNagata  = max(maxNagata, abs(pN.length() - distToSurface));
+                maxFlat = max(maxFlat, abs(pF.length() - distToSurface));
             }
         }
     }
-    return {maxFlat,maxNagata};
+    
+    float ratio = (maxNagata > 1e-10f) ? maxFlat / maxNagata : 0;
+    float avgFlat = count ? sumFlat / count : 0;
+    float avgNagata = count ? sumNagata / count : 0;
+    
+    ErrorStats stats;
+    stats.ratio = ratio;
+    stats.maxFlat = maxFlat;
+    stats.maxNagata = maxNagata;
+    stats.avgFlat = avgFlat;
+    stats.avgNagata = avgNagata;
+    stats.samples = count;
+    
+    return stats;
 }
 void Evaluator::RunSimplificationExperiment()
 {
@@ -159,9 +185,9 @@ void Evaluator::RunSimplificationExperiment()
     {
         Mesh mesh;
         MakeSphereMesh(radius, res, res,mesh);
-        pair<float,float> p = MeasureError(mesh, radius, 20);   // sampleN = 20 for accurate measurement
+        ErrorStats p = MeasureError(mesh, radius, 20);   // sampleN = 20 for accurate measurement
         cout << res << "\t" << mesh.triangles.size()
-             << "\t\t" << p.first << "\t" << p.second << "\n";
+             << "\t\t" << p.maxNagata << "\t" << p.maxFlat << "\n";
     }
 }
 
