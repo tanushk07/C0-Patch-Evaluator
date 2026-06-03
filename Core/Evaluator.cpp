@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <fstream>
+#include "MakeSphereMesh.h"
 using namespace std;
 
 Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd)
@@ -68,6 +69,63 @@ void Evaluator::WriteFlatObj(const Mesh &sphereMesh, const char* filename)
     }
 }
 
+
+
+
+void Evaluator::WriteNagataObj( const Mesh& Mesh, const char * filename, int N)
+{
+	ofstream file(filename);
+    long long vertexcounter =0;
+    
+    for (auto p : Mesh.triangles)
+    {
+        vector<Vector3> verts = {Mesh.vertices[p.a], Mesh.vertices[p.b], Mesh.vertices[p.c]};
+        vector<Vector3> norms = {Mesh.normals[p.a], Mesh.normals[p.b], Mesh.normals[p.c]};
+        coefficients c = MakeCoefficients(verts, norms);
+        
+        vector<vector<int>> localInd(N+1);
+        
+        for (int i=0;i<=N;++i)
+        {
+            float zeta = static_cast<float>(i) / N;
+            localInd[i].resize(i+1);
+            for (int j = 0; j <=i; ++j)
+            {
+                float eta = static_cast<float>(j) / N;
+                Vector3 patchVertex = EvalPatch(c, eta, zeta);
+                Vector3 patchNormal = EvalNormal(c, eta, zeta);
+                
+                Vector3 ref = norms[0] * (1.0f - zeta)
+                            + norms[1] * (zeta - eta)
+                            + norms[2] * eta;
+                if (patchNormal.dot(ref) < 0.0f) patchNormal = -patchNormal;
+                file << "v " << patchVertex.x << " " << patchVertex.y << " " << patchVertex.z << "\n";
+                file << "vn " << patchNormal.x << " " << patchNormal.y << " " << patchNormal.z << "\n";
+                localInd[i][j]=vertexcounter++;
+            }
+        }
+        
+        for (int j = 1; j <= N; ++j)
+        {
+            for (int i = 0; i < j; ++i)
+            {
+                int A = localInd[j][i];
+                int B = localInd[j - 1][i];
+                int C = localInd[j][i + 1];
+                file << "f " << (A+1) << "//" << (A+1) << " " << (C+1) << "//" << (C+1) << " " << (B+1) << "//" << (B+1) << "\n";
+
+
+                if (i < j - 1)              
+                {
+                    int D = localInd[j - 1][i + 1];
+                    file << "f " << (B+1) << "//" << (B+1) << " " << (C+1) << "//" << (C+1) << " " << (D+1) << "//" << (D+1) << "\n";
+                }
+            }
+        }
+    }
+
+}
+
 pair<float,float> Evaluator::MeasureError(const Mesh &Mesh, float radius, int N)
 {
     float maxFlat =0, maxNagata = 0;
@@ -78,10 +136,10 @@ pair<float,float> Evaluator::MeasureError(const Mesh &Mesh, float radius, int N)
         coefficients c = MakeCoefficients(verts, norms);
         for (int j = 0; j <= N; j++)
         {
-            float zeta = (float)j / N;
+            float zeta = static_cast<float>(j) / N;
             for (int i = 0; i <= j; i++)
             {
-                float eta = (float)i / N;
+                float eta = static_cast<float>(i) / N;
 
                 Vector3 pN = EvalPatch(c, eta, zeta);
                 Vector3 pF = EvalFlat(verts, eta, zeta);
@@ -99,95 +157,11 @@ void Evaluator::RunSimplificationExperiment()
     cout << "res\ttriangles\tmaxFlat\t\tmaxNagata\n";
     for (int res : {4, 8, 16, 32, 64})
     {
-        Mesh mesh = MakeSphereMesh(radius, res, res);
+        Mesh mesh;
+        MakeSphereMesh(radius, res, res,mesh);
         pair<float,float> p = MeasureError(mesh, radius, 20);   // sampleN = 20 for accurate measurement
         cout << res << "\t" << mesh.triangles.size()
              << "\t\t" << p.first << "\t" << p.second << "\n";
     }
 }
-void Evaluator::WriteNagataObj(Mesh& sphereMesh, const char * filename, int N)
-{
-	ofstream file(filename);
-    long long vertexcounter =0;
-    
-    for (auto p : sphereMesh.triangles)
-    {
-        vector<Vector3> verts = {sphereMesh.vertices[p.a], sphereMesh.vertices[p.b], sphereMesh.vertices[p.c]};
-        vector<Vector3> norms = {sphereMesh.normals[p.a], sphereMesh.normals[p.b], sphereMesh.normals[p.c]};
-        coefficients c = MakeCoefficients(verts, norms);
-        
-        vector<vector<int>> localInd(N+1);
-        
-        for (int i=0;i<=N;++i)
-        {
-            float zeta = static_cast<float>(i) / N;
-            localInd[i].resize(i+1);
-            for (int j = 0; j <=i; ++j)
-            {
-                float eta = static_cast<float>(j) / N;
-                Vector3 patchVertex = EvalPatch(c, eta, zeta);
-                file << "v " << patchVertex.x << " " << patchVertex.y << " " << patchVertex.z << "\n";
-                localInd[i][j]=vertexcounter++;
-            }
-        }
-        
-        for (int j = 1; j <= N; ++j)
-        {
-            for (int i = 0; i < j; ++i)
-            {
-                int A = localInd[j][i];
-                int B = localInd[j - 1][i];
-                int C = localInd[j][i + 1];
-                file << "f " << (A + 1) << " " << (B + 1) << " " << (C + 1) << "\n";
 
-                if (i < j - 1)              
-                {
-                    int D = localInd[j - 1][i + 1];
-                    file << "f " << (B + 1) << " " << (D + 1) << " " << (C + 1) << "\n";
-                }
-            }
-        }
-    }
-
-}
-
-
-Mesh Evaluator::MakeSphereMesh(float radius, int rings, int sectors)
-{
-    Mesh sphereMesh;
-
-    for (int i = 0; i <= rings; ++i)
-    {
-        for (int j = 0; j <= sectors; ++j)
-        {
-            float theta = pi * i / rings;
-            float phi = 2.0f * pi * j / sectors;
-            float x = radius * std::sin(theta) * std::cos(phi);
-            float y = radius * std::sin(theta) * std::sin(phi);
-            float z = radius * std::cos(theta);
-
-            Vector3 p = {x, y, z};
-            sphereMesh.vertices.push_back(p);
-            sphereMesh.normals.push_back(p.normalize());
-        }
-    }
-
-    for (int i = 0; i < rings; ++i)
-    {
-        for (int j = 0; j < sectors; ++j)
-        {
-            int row1 = i * (sectors + 1);
-            int row2 = (i + 1) * (sectors + 1);
-
-            int i0 = row1 + j;
-            int i1 = row1 + j + 1;
-            int i2 = row2 + j;
-            int i3 = row2 + j + 1;
-
-            sphereMesh.triangles.push_back({i0, i2, i1});
-            sphereMesh.triangles.push_back({i1, i2, i3});
-        }
-    }
-
-    return sphereMesh;
-}

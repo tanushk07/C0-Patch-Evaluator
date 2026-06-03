@@ -2,9 +2,10 @@
 
 #include "Evaluator.h"
 #include <algorithm>
-#include <cmath>
+#include "Vector3.h"
 #include <iostream>
 #include <vector>
+#include "MakeSphereMesh.h"
 
 using namespace std;
 class Tests
@@ -71,7 +72,7 @@ public:
         {
             Vector3 got = Evaluator::EvalNormal(c, params[i][0], params[i][1]);
             Vector3 exp = norms[i].normalize();
-            float err = 1.0f - std::abs(got.dot(exp));  // 0 when parallel
+            float err = 1.0f - std::abs(got.dot(exp));  // 0 when parallel. This test only checks that normal lies on the same line as the true one, not that it points the same way.
             bool pass = err < TOL;
             ok &= pass;
             cout << "  " << names[i] << ":  |1-|dot||=" << err
@@ -80,38 +81,43 @@ public:
         return ok;
     }
 
-    static bool Test4_SphereAccuracy(int N = 50)
+    static bool Test4_Accuracy(const Mesh& mesh, float distToSurface, int sampleN = 20)
     {
-        cout << "\nTest 4: Unit-sphere accuracy (" << N << "x" << N << " grid)\n";
+        cout << "\nTest 4: Mesh accuracy (distToSurface " << distToSurface
+             << ", " << mesh.triangles.size() << " triangles, "
+             << sampleN << " samples/edge per triangle)\n";
 
-        vector<Vector3> verts = {
-            Vector3(1, 0, 0),
-            Vector3(0, 1, 0),
-            Vector3(0, 0, 1)
-        };
-        vector<Vector3> norms = verts;  // normals = positions for unit sphere
+        float  maxFlat = 0, maxNagata = 0;
+        double sumFlat = 0, sumNagata = 0;   // double: many samples accumulate, float drifts
+        long long count = 0;
 
-        coefficients c = Evaluator::MakeCoefficients(verts, norms);
-
-        float maxFlat = 0, maxNagata = 0;
-        float sumFlat = 0, sumNagata = 0;
-        int count = 0;
-
-        for (int j = 0; j <= N; j++)
+        for (const Tri& tri : mesh.triangles)
         {
-            float zeta = static_cast<float>(j) / N;
-            for (int i = 0; i <= j; i++)
+            vector<Vector3> verts = {mesh.vertices[tri.a], mesh.vertices[tri.b], mesh.vertices[tri.c]};
+            vector<Vector3> norms = {mesh.normals[tri.a],  mesh.normals[tri.b],  mesh.normals[tri.c]};
+
+            // skip zero-area (pole) triangles so we measure exactly what gets rendered
+            float area2 = ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
+            if (area2 < 1e-6f) continue;
+
+            coefficients c = Evaluator::MakeCoefficients(verts, norms);
+
+            for (int j = 0; j <= sampleN; j++)
             {
-                float eta = static_cast<float>(i) / N;
+                float zeta = static_cast<float>(j) / sampleN;
+                for (int i = 0; i <= j; i++)
+                {
+                    float eta = static_cast<float>(i) / sampleN;
 
-                float errN = std::abs(Evaluator::EvalPatch(c, eta, zeta).length() - 1.0f);
-                float errF = std::abs(Evaluator::EvalFlat(verts, eta, zeta).length() - 1.0f);
+                    float errN = std::abs(Evaluator::EvalPatch(c, eta, zeta).length() - distToSurface);
+                    float errF = std::abs(Evaluator::EvalFlat(verts, eta, zeta).length() - distToSurface);
 
-                maxNagata = std::max(maxNagata, errN);
-                maxFlat   = std::max(maxFlat,   errF);
-                sumNagata += errN;
-                sumFlat   += errF;
-                count++;
+                    maxNagata = std::max(maxNagata, errN);
+                    maxFlat   = std::max(maxFlat,   errF);
+                    sumNagata += errN;
+                    sumFlat   += errF;
+                    count++;
+                }
             }
         }
 
@@ -120,11 +126,11 @@ public:
         cout << "Samples:           " << count << endl;
         cout << "Max flat error:    " << maxFlat << endl;
         cout << "Max Nagata error:  " << maxNagata << endl;
-        cout << "Avg flat error:    " << sumFlat / count << endl;
-        cout << "Avg Nagata error:  " << sumNagata / count << endl;
-        cout << "Improvement ratio: " << ratio << "x\n";
+        cout << "Avg flat error:    " << (count ? sumFlat / count : 0) << endl;
+        cout << "Avg Nagata error:  " << (count ? sumNagata / count : 0) << endl;
+        cout << "Improvement ratio: " << ratio << "x  (scale-invariant)\n";
 
-        bool pass = maxNagata < maxFlat;
+        bool pass = (maxNagata < maxFlat);
         cout << "  Nagata < flat?     " << (pass ? "PASS" : "FAIL") << "\n";
         return pass;
     }

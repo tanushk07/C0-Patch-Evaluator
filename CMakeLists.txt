@@ -6,8 +6,10 @@ set(C0EVAL_SOURCES
         Core/Main.cpp
         Core/Evaluator.cpp
         Core/Evaluator.h
-        Tests/Tests.cpp
+        Tests/Tests.h
         Utils/Vector3.h
+        Utils/MakeSphereMesh.h
+        Utils/Mesh.h
 )
 
 add_executable(C0Eval ${C0EVAL_SOURCES})
@@ -19,4 +21,5 @@ target_compile_features(C0Eval PRIVATE cxx_std_17)
 target_include_directories(C0Eval PRIVATE
         Core
         Utils
+        Tests
 )
