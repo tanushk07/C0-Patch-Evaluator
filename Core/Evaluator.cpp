@@ -238,7 +238,7 @@ void Evaluator::RunSimplificationExperiment()
         };
         ErrorStats p = MeasureError(mesh, sphereError, 20);   // sampleN = 20 for accurate measurement
         cout << res << "\t" << mesh.triangles.size()
-             << "\t\t" << p.maxNagata << "\t" << p.maxFlat << "\n";
+             << "\t\t" << p.maxFlat << "\t" << p.maxNagata << "\n";
     }
     
     cout<<"Torus:\n";

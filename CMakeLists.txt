@@ -9,6 +9,7 @@ set(C0EVAL_SOURCES
         Tests/Tests.h
         Utils/Vector3.h
         Utils/MakeSphereMesh.h
+        Utils/MakeTorusMesh.h
         Utils/Mesh.h
         Utils/ErrorStats.h
 )
