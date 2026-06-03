@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include <utility>
 #include <fstream>
+#include <MakeTorusMesh.h>
+
 #include "ErrorStats.h"
 #include "MakeSphereMesh.h"
 using namespace std;
@@ -70,11 +72,47 @@ void Evaluator::WriteFlatObj(const Mesh &sphereMesh, const char* filename)
         file <<"f "<< n.a + 1 << " " << n.b +1  << " " << n.c +1 << "\n";
     }
 }
+void Evaluator::WriteFlatErrorObj(const Mesh &Mesh, const char* filename, int N,float DistanceToSurface, float maxError)
+{
+    std::ofstream file(filename);
+    long long vertexcounter = 0;
+    for (auto v: Mesh.triangles)
+    {
+        vector<Vector3> verts = {Mesh.vertices[v.a], Mesh.vertices[v.b], Mesh.vertices[v.c]};
+        vector<vector<int>> localInd(N+1);
+        for (int i = 0; i <= N; ++i)
+        {
+            float zeta = static_cast<float>(i) / N;
+            for (int j = 0; j <= N; ++j)
+            {
+                float eta = static_cast<float>(j) / N;
+                Vector3 p = EvalFlat(verts,eta,zeta);
+                float err = abs(p.length() - DistanceToSurface);
+                float t = min(max(err/maxError,0.f),1.f);
+                file << "v " << p.x << " " << p.y << " " << p.z << " "<< t << (1.f - t) << " 0\n";
+                localInd[i][j]=vertexcounter++;
+            }
+        }
+        
+        for (int i = 1; i <= N; ++i)
+        {
+            for (int j = 0; j < i; ++j)
+            {
+                int A = localInd[i][j], B = localInd[i-1][j], C = localInd[i][j+1];
+                file << "f "<< A+1 << " " << C+1 << " " << B+1 << "\n";
+                if (i < j-1) 
+                { 
+                    int D = localInd[j-1][i+1];
+                    file << "f " << B+1 << " " << C+1 << " " << D+1 << "\n";
+                }
+            }
+            
+        }
+    }
+}
 
 
-
-
-void Evaluator::WriteNagataObj( const Mesh& Mesh, const char * filename, int N)
+void Evaluator::WriteNagataErrorObj( const Mesh& Mesh, const char * filename, int N, float DistanceToSurface, float maxError)
 {
 	ofstream file(filename);
     long long vertexcounter =0;
@@ -101,7 +139,12 @@ void Evaluator::WriteNagataObj( const Mesh& Mesh, const char * filename, int N)
                             + norms[1] * (zeta - eta)
                             + norms[2] * eta;
                 if (patchNormal.dot(ref) < 0.0f) patchNormal = -patchNormal;
-                file << "v " << patchVertex.x << " " << patchVertex.y << " " << patchVertex.z << "\n";
+                
+                float err = abs(patchVertex.length() - DistanceToSurface);
+                float t = min(max(err/maxError,0.f),1.f);
+                float r = t, g=1.f-t, b=0.f;
+                file << "v " << patchVertex.x << " " << patchVertex.y << " " << patchVertex.z 
+                << " " << r <<" "<<g<<" "<<b << "\n";
                 file << "vn " << patchNormal.x << " " << patchNormal.y << " " << patchNormal.z << "\n";
                 localInd[i][j]=vertexcounter++;
             }
@@ -128,7 +171,8 @@ void Evaluator::WriteNagataObj( const Mesh& Mesh, const char * filename, int N)
 
 }
 
-ErrorStats Evaluator::MeasureError(const Mesh &Mesh, float distToSurface, int N)
+
+ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , int N)
 {
     float  maxFlat = 0, maxNagata = 0;
     double sumFlat = 0, sumNagata = 0;   // double: many samples accumulate, float drifts
@@ -154,11 +198,13 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh, float distToSurface, int N)
                 Vector3 pN = EvalPatch(c, eta, zeta);
                 Vector3 pF = EvalFlat(verts, eta, zeta);
                 
+                float errF = Error(pF);
+                float errN = Error(pN);
                 count++;
-                sumFlat += pF.length() - distToSurface;
-                sumNagata += pN.length() - distToSurface;
-                maxNagata  = max(maxNagata, abs(pN.length() - distToSurface));
-                maxFlat = max(maxFlat, abs(pF.length() - distToSurface));
+                sumFlat += errF;
+                sumNagata += errN;
+                maxNagata  = max(maxNagata, abs(errN));
+                maxFlat = max(maxFlat, abs(errF));
             }
         }
     }
@@ -180,12 +226,35 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh, float distToSurface, int N)
 void Evaluator::RunSimplificationExperiment()
 {
     float radius = 1.0f;
+    cout<<"Sphere:\n";
     cout << "res\ttriangles\tmaxFlat\t\tmaxNagata\n";
     for (int res : {4, 8, 16, 32, 64})
     {
         Mesh mesh;
         MakeSphereMesh(radius, res, res,mesh);
-        ErrorStats p = MeasureError(mesh, radius, 20);   // sampleN = 20 for accurate measurement
+        ErrorMetric sphereError = [radius](Vector3 p) {
+            return std::abs(p.length() - radius);
+        };
+        ErrorStats p = MeasureError(mesh, sphereError, 20);   // sampleN = 20 for accurate measurement
+        cout << res << "\t" << mesh.triangles.size()
+             << "\t\t" << p.maxNagata << "\t" << p.maxFlat << "\n";
+    }
+    
+    cout<<"Torus:\n";
+    
+    cout << "res\ttriangles\tmaxFlat\t\tmaxNagata\n";
+    for (int res : {4, 8, 16, 32, 64})
+    {
+        Mesh mesh;
+        
+        float Rc = 5.0f, Rt = 3.0f;
+        ErrorMetric torusError = [Rc, Rt](Vector3 p) {
+            float q = std::sqrt(p.x*p.x + p.y*p.y) - Rc; // it is the distance from centerline ring, in xy-plane
+            float d = std::sqrt(q*q + p.z*p.z);          // distance from the tube's center circle
+            return std::abs(d - Rt);                     // how far off the tube surface
+        };
+        MakeTorusMesh(Rc, Rt, res,res,mesh);
+        ErrorStats p = MeasureError(mesh, torusError, 20);   // sampleN = 20 for accurate measurement
         cout << res << "\t" << mesh.triangles.size()
              << "\t\t" << p.maxNagata << "\t" << p.maxFlat << "\n";
     }

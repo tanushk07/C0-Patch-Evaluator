@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <vector>
 #include <utility>
 #include "Vector3.h"
@@ -7,7 +8,7 @@ using namespace std;
 
 inline constexpr float TOL = 1e-5f;
 inline constexpr float pi = 3.14159265358979323846f;
-
+using ErrorMetric = function<float(Vector3)>;
 struct ErrorStats;
 struct Mesh;
 
@@ -25,8 +26,10 @@ class Evaluator
     static Vector3 EvalNormal(const coefficients& c, float eta, float zeta);
     static Vector3 EvalFlat(const std::vector<Vector3>& verts, float eta, float zeta);
     static void WriteFlatObj(const Mesh& sphereMesh, const char* filename);
-    static void WriteNagataObj(const Mesh& sphereMesh, const char* filename, int N);
-    static ErrorStats MeasureError(const Mesh& Mesh, float distToSurface, int N);
+    static void WriteFlatErrorObj(const Mesh& Mesh, const char* filename, int N, float DistanceToSurface, float maxError);
+    static ErrorStats MeasureError(const Mesh& Mesh, const ErrorMetric &Error, int N);
     static void RunSimplificationExperiment();
+    
+    static void WriteNagataErrorObj( const Mesh& Mesh, const char * filename, int N, float DistanceToSurface, float maxError);
 };
 

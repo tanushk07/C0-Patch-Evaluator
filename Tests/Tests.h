@@ -83,13 +83,13 @@ public:
         return ok;
     }
 
-    static bool Test4_Accuracy(const Mesh& mesh, float distToSurface, int sampleN = 20)
+    static bool Test4_Accuracy(const Mesh& mesh, const ErrorMetric &Error, int sampleN = 20)
     {
-        cout << "\nTest 4: Mesh accuracy (distToSurface " << distToSurface
+        cout << "\nTest 4: Mesh accuracy  "
              << ", " << mesh.triangles.size() << " triangles, "
              << sampleN << " samples/edge per triangle)\n";
 
-        ErrorStats stats = Evaluator::MeasureError(mesh,distToSurface,sampleN);
+        ErrorStats stats = Evaluator::MeasureError(mesh,Error,sampleN);
 
         cout << "Samples:           " << stats.samples << endl;
         cout << "Max flat error:    " << stats.maxFlat << endl;
