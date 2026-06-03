@@ -17,6 +17,7 @@ struct coefficients
     Vector3 c00,c11,c10,c01,c20,c02;
 };
 
+    
 class Evaluator
 {
     public:
@@ -26,10 +27,9 @@ class Evaluator
     static Vector3 EvalNormal(const coefficients& c, float eta, float zeta);
     static Vector3 EvalFlat(const std::vector<Vector3>& verts, float eta, float zeta);
     static void WriteFlatObj(const Mesh& sphereMesh, const char* filename);
-    static void WriteFlatErrorObj(const Mesh& Mesh, const char* filename, int N, float DistanceToSurface, float maxError);
     static ErrorStats MeasureError(const Mesh& Mesh, const ErrorMetric &Error, int N);
     static void RunSimplificationExperiment();
-    
-    static void WriteNagataErrorObj( const Mesh& Mesh, const char * filename, int N, float DistanceToSurface, float maxError);
+    static void WriteFlatErrorObj(const Mesh& Mesh, const char* filename, int N,const ErrorMetric& error, float maxError);
+    static void WriteNagataErrorObj( const Mesh& Mesh, const char * filename, int N, const ErrorMetric& error, float maxError);
 };
 
