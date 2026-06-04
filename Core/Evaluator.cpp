@@ -176,7 +176,7 @@ void Evaluator::WriteNagataErrorObj( const Mesh& Mesh, const char * filename, in
 ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , int N)
 {
     float  maxFlat = 0, maxNagata = 0;
-    double sumFlat = 0, sumNagata = 0;   // double: many samples accumulate, float drifts
+    double sumFlat = 0, sumNagata = 0;
     long long count = 0;
     
     for (auto T: Mesh.triangles)
@@ -185,8 +185,8 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , i
         vector<Vector3> norms = {Mesh.normals[T.a], Mesh.normals[T.b], Mesh.normals[T.c]};
         
         // skip zero-area (pole) triangles so we measure exactly what gets rendered
-        float area2 = ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
-        if (area2 < 1e-6f) continue;
+        float triangleArea = 0.5f * ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
+        if (triangleArea < 1e-6f) continue;
         
         coefficients c = MakeCoefficients(verts, norms);
         for (int j = 0; j <= N; j++)
@@ -236,7 +236,7 @@ void Evaluator::RunSimplificationExperiment()
         ErrorMetric sphereError = [radius](Vector3 p) {
             return std::abs(p.length() - radius);
         };
-        ErrorStats p = MeasureError(mesh, sphereError, 20);   // sampleN = 20 for accurate measurement
+        ErrorStats p = MeasureError(mesh, sphereError, 20);
         cout << res << "\t" << mesh.triangles.size()
              << "\t\t" << p.maxFlat << "\t" << p.maxNagata << "\n";
     }
@@ -255,9 +255,8 @@ void Evaluator::RunSimplificationExperiment()
             return std::abs(d - Rt);                     // how far off the tube surface
         };
         MakeTorusMesh(Rc, Rt, res,res,mesh);
-        ErrorStats p = MeasureError(mesh, torusError, 20);   // sampleN = 20 for accurate measurement
+        ErrorStats p = MeasureError(mesh, torusError, 20);
         cout << res << "\t" << mesh.triangles.size()
              << "\t\t" << p.maxFlat << "\t" << p.maxNagata << "\n";
     }
 }
-
