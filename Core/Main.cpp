@@ -9,11 +9,11 @@ using namespace std;
 
 int main()
 {
-    //Phase 1: Correctness tests on a single C0 Nagata patch. A small symmetric triangle on a sphere of radius R is enough to check the curvature parameter, vertex recovery, and normals.
+    // Correctness tests on a single C0 Nagata patch. A small symmetric triangle on a sphere of radius R is enough to check the curvature parameter, vertex recovery, and normals.
     const float R = 1.0f;
 
     vector<Vector3> verts = { Vector3(1,0,0), Vector3(0,1,0), Vector3(0,0,1) };
-    vector<Vector3> norms = verts;                 // on a unit sphere, normal == position
+    vector<Vector3> norms = verts;                
     coefficients c = Evaluator::MakeCoefficients(verts, norms);
 
     ErrorMetric sphereError = [R](Vector3 p) {
@@ -30,15 +30,12 @@ int main()
     if (Tests::Test4_Accuracy(sphere, sphereError))    passed++;
     cout << "\nResults: " << passed << "/" << total << " tests passed\n";
 
-    // Phase 2: Quantitative comparison across mesh resolutions.
-    // Prints, for sphere and torus, how flat-triangle error and
-    // Nagata-patch error shrink as the control mesh is refined.
+    // Prints, for sphere and torus, how flat-triangle error and Nagata-patch error shrink as the control mesh is refined.
     Evaluator::RunSimplificationExperiment();
 
-    // Phase 3: Visual artifacts (OBJ with per-vertex error color).
-    // Flat and Nagata share ONE error scale so the colors are
-    // directly comparable: green = on the surface, red = far off.
-    const int displayN = 6;                        // samples per patch edge, display only
+    // OBJ with per-vertex error color.
+    // Flat and Nagata share ONE error scale so the colors are directly comparable: green = on the surface, red = far off.
+    const int displayN = 6;                      
 
     // Sphere maps, scaled by the flat mesh's worst error
     ErrorStats sphereStats = Evaluator::MeasureError(sphere, sphereError, 20);

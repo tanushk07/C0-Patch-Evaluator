@@ -14,14 +14,24 @@ set(C0EVAL_SOURCES
         Utils/ErrorStats.h
 )
 
+set(C0EVAL_DOCS
+        Docs/comparison.png
+)
+
 add_executable(C0Eval ${C0EVAL_SOURCES})
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${C0EVAL_SOURCES})
+add_custom_target(C0EvalDocs SOURCES ${C0EVAL_DOCS})
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES
+        ${C0EVAL_SOURCES}
+        ${C0EVAL_DOCS}
+)
 
 target_compile_features(C0Eval PRIVATE cxx_std_17)
 
 target_include_directories(C0Eval PRIVATE
         Core
         Utils
+        Docs
         Tests
 )

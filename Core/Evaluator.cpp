@@ -250,9 +250,9 @@ void Evaluator::RunSimplificationExperiment()
         
         float Rc = 5.0f, Rt = 3.0f;
         ErrorMetric torusError = [Rc, Rt](Vector3 p) {
-            float q = std::sqrt(p.x*p.x + p.y*p.y) - Rc; // it is the distance from centerline ring, in xy-plane
-            float d = std::sqrt(q*q + p.z*p.z);          // distance from the tube's center circle
-            return std::abs(d - Rt);                     // how far off the tube surface
+            float q = std::sqrt(p.x*p.x + p.y*p.y) - Rc; 
+            float d = std::sqrt(q*q + p.z*p.z);         
+            return std::abs(d - Rt);                    
         };
         MakeTorusMesh(Rc, Rt, res,res,mesh);
         ErrorStats p = MeasureError(mesh, torusError, 20);

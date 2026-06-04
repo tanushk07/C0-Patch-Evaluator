@@ -87,7 +87,7 @@ public:
     {
         cout << "\nTest 4: Mesh accuracy  "
              << ", " << mesh.triangles.size() << " triangles, "
-             << sampleN << " samples/edge per triangle)\n";
+             << sampleN << " samples across the whole triangle's parameter grid)\n";
 
         ErrorStats stats = Evaluator::MeasureError(mesh,Error,sampleN);
 
