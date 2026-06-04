@@ -1,10 +1,10 @@
 # C0 Nagata Patch Evaluator
 
-Reconstructing smooth curved surfaces from a triangle mesh using **C0 Nagata patches** (Nagata, 2005): each triangle's three vertices and their three normals define a quadratic patch that curves to follow the surface. This project implements the patch evaluator, verifies it against analytic surfaces (sphere and torus), and quantifies how much more accurately Nagata patches approximate a curved surface than flat triangles at the same mesh resolution.
+Reconstructing smooth curved surfaces from a triangle mesh using **C0 Nagata patches** (Nagata, 2005): each triangle's three vertices and their three normals define a quadratic patch that curves to approximate the underlying surface.
 
 ## Headline result
 
-Error against the true surface, measured as the maximum distance from the analytic shape, across mesh resolutions. Both methods use the same control mesh and the same sampling; only flat-vs-curved differs.
+Error against the true surface, measured as the maximum distance from the analytic shape, across mesh resolutions. Both methods use the same control mesh and the same sampling; only flat-vs-curved triangles differ.
 
 **Sphere (radius 1):**
 
@@ -16,7 +16,7 @@ Error against the true surface, measured as the maximum distance from the analyt
 | 2048      | 0.006002       | 0.00001812       |
 | 8192      | 0.001505       | 0.000001192      |
 
-Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 128 triangles (0.0045) is already more accurate than flat triangles at 2048 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
+Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 128 triangles (0.0045) is already more accurate than flat triangles at 2048 triangles (0.0060).**
 
 **Torus (centerline radius 5, tube radius 3):**
 
@@ -32,9 +32,9 @@ Same pattern as the sphere. The absolute numbers are larger only because the tor
 
 ## Visual comparison
 
-![Flat vs Nagata error maps](docs/comparison.png)
+![Flat vs Nagata error maps](Docs/comparison.png)
 
-Green means on the true surface, red means far from it, scaled so that the flat mesh's worst error maps to full red. Flat triangles (the faceted, red-blotched shapes) sag away from the surface between vertices; Nagata patches (uniformly green) stay on it. The spiky renders show the per-vertex surface normals the patches reconstruct.
+Green means on the true surface, red means far from it, scaled so that the flat mesh's worst error maps to full red. Flat triangles (the faceted, red-blotched shapes) sag away from the surface between vertices; Nagata patches produce a smoother, much more accurate surface.
 
 ## Build and run
 
@@ -49,7 +49,7 @@ Running the program:
 2. Prints flat-vs-Nagata max error across resolutions for a sphere and a torus.
 3. Writes four error-colored OBJ files (sphere and torus, flat and Nagata) to the working directory.
 
-Open the colored OBJ files in a viewer that reads per-vertex color (for example [3dviewer.net](https://3dviewer.net), or Blender with Solid shading then Color set to Attribute). For the smooth-normal view, use the Nagata sphere with Shade Smooth.
+Open the colored OBJ files in a viewer that reads per-vertex color (for example [3dviewer.net](https://3dviewer.net), or Blender with Solid shading then Color set to Attribute). For the smooth-normal Nagata meshes, make sure the viewer is not recomputing normals.
 
 ## What is implemented
 
@@ -122,7 +122,7 @@ The 331x figure in Test 4 is the max-error ratio at a single resolution (2048 tr
 
 ## Scope and notes
 
-This implements the **C0** patch only (position-continuous across shared edges). The G1 extension (tangent-plane continuity) is not implemented; C0 was the requested scope and is the foundation G1 builds on. See `NOTES.md` for the coefficient derivation, the C0-vs-G1 distinction, a sign discrepancy found between the source papers, and known limitations.
+This implements the **C0** patch only (position-continuous across shared edges). The G1 extension (tangent-plane continuity) is not implemented; C0 was the requested scope and is the foundation G1 builds on.
 
 ## Reference
 
