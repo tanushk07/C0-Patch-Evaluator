@@ -53,7 +53,7 @@ Running the program:
 2. Prints flat-vs-Nagata max error across resolutions for a sphere and a torus.
 3. Writes four error-colored OBJ files (sphere and torus, flat and Nagata) to the working directory.
 
-Open the colored OBJ files in a viewer that reads per-vertex color (for example [3dviewer.net](https://3dviewer.net),https://threejs.org/editor/, or Blender with Solid shading then Color set to Attribute). For the smooth-normal view, use the Nagata sphere with Shade Smooth.
+Open the colored OBJ files in a viewer that reads per-vertex color (for example [3dviewer.net](https://3dviewer.net), [the three.js editor](https://threejs.org/editor/), or Blender with Solid shading then Color set to Attribute). For the smooth-normal view, use the Nagata sphere with Shade Smooth.
 
 ## What is implemented
 
