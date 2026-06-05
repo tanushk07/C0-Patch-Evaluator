@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="300" viewBox="0 0 460 300" font-family="sans-serif">
+    <rect width="460" height="300" fill="#f8fafc"/>
+    <line x1="70" y1="40" x2="70" y2="265" stroke="#64748b" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="56" y="38" font-size="12" fill="#334155">z axis</text>
+    <line x1="70" y1="180" x2="430" y2="180" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="356" y="174" font-size="11" fill="#475569">z = 0 plane</text>
+    <circle cx="300" cy="180" r="70" fill="none" stroke="#0f172a" stroke-width="2"/>
+    <circle cx="300" cy="180" r="3" fill="#0f172a"/>
+    <text x="282" y="266" font-size="12" fill="#334155">tube (R_t)</text>
+    <line x1="70" y1="180" x2="300" y2="180" stroke="#047857" stroke-width="1.6"/>
+    <text x="172" y="196" font-size="12" fill="#047857">R_c</text>
+    <circle cx="345" cy="135" r="4" fill="#dc2626"/>
+    <text x="350" y="130" font-size="12" fill="#dc2626">P</text>
+    <line x1="300" y1="180" x2="345" y2="135" stroke="#dc2626" stroke-width="2"/>
+    <text x="314" y="150" font-size="12" fill="#dc2626">d</text>
+    <line x1="300" y1="180" x2="345" y2="180" stroke="#2563eb" stroke-width="1.6" stroke-dasharray="4 2"/>
+    <text x="312" y="194" font-size="12" fill="#2563eb">q</text>
+    <line x1="345" y1="180" x2="345" y2="135" stroke="#2563eb" stroke-width="1.6" stroke-dasharray="4 2"/>
+    <text x="350" y="162" font-size="12" fill="#2563eb">p_z</text>
+    <line x1="300" y1="180" x2="300" y2="110" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <text x="305" y="120" font-size="11" fill="#334155">R_t</text>
+    <line x1="70" y1="225" x2="345" y2="225" stroke="#94a3b8" stroke-width="1"/>
+    <line x1="70" y1="220" x2="70" y2="230" stroke="#94a3b8" stroke-width="1"/>
+    <line x1="345" y1="220" x2="345" y2="230" stroke="#94a3b8" stroke-width="1"/>
+    <text x="150" y="240" font-size="11" fill="#334155">sqrt(px^2 + py^2)</text>
+    <text x="230" y="285" font-size="13" text-anchor="middle" fill="#0f172a">error = | d - R_t |</text>
+</svg>

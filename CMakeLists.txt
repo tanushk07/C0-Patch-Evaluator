@@ -16,6 +16,10 @@ set(C0EVAL_SOURCES
 
 set(C0EVAL_DOCS
         Docs/comparison.png
+        Docs/Notes.md
+        Docs/edge_curve.svg
+        Docs/param_triangle.svg
+        Docs/torus_metric.svg
 )
 
 add_executable(C0Eval ${C0EVAL_SOURCES})

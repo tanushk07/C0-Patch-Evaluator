@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="290" viewBox="0 0 540 290" font-family="sans-serif">
+    <rect width="540" height="290" fill="#f8fafc"/>
+    <defs>
+        <marker id="t" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#047857"/></marker>
+        <marker id="n" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ea580c"/></marker>
+    </defs>
+    <line x1="100" y1="220" x2="440" y2="220" stroke="#64748b" stroke-width="1.5"/>
+    <path d="M100,220 Q270,70 440,220" stroke="#0f172a" stroke-width="2" fill="none"/>
+    <line x1="270" y1="220" x2="270" y2="145" stroke="#64748b" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="276" y="188" font-size="13" fill="#334155">c</text>
+    <circle cx="100" cy="220" r="4" fill="#0f172a"/>
+    <circle cx="440" cy="220" r="4" fill="#0f172a"/>
+    <line x1="100" y1="220" x2="153" y2="174" stroke="#047857" stroke-width="2" marker-end="url(#t)"/>
+    <text x="150" y="166" font-size="12" fill="#047857">y'(0) = d - c</text>
+    <line x1="100" y1="220" x2="60" y2="175" stroke="#ea580c" stroke-width="2" marker-end="url(#n)"/>
+    <text x="36" y="166" font-size="12" fill="#ea580c">n_p</text>
+    <line x1="440" y1="220" x2="487" y2="262" stroke="#047857" stroke-width="2" marker-end="url(#t)"/>
+    <text x="452" y="278" font-size="12" fill="#047857">y'(1) = d + c</text>
+    <line x1="440" y1="220" x2="482" y2="175" stroke="#ea580c" stroke-width="2" marker-end="url(#n)"/>
+    <text x="486" y="170" font-size="12" fill="#ea580c">n_q</text>
+    <text x="86" y="240" font-size="13" fill="#0f172a">p</text>
+    <text x="444" y="240" font-size="13" fill="#0f172a">q</text>
+    <text x="236" y="240" font-size="12" fill="#334155">d = q - p</text>
+</svg>
