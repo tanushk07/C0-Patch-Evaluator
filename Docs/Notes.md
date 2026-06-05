@@ -90,7 +90,7 @@ unit normals ($\mathbf{n}_p \cdot \mathbf{n}_p = 1$):
 
 $$\alpha + \beta\,c_s = \mathbf{n}_p \cdot \mathbf{d}, \qquad \alpha\,c_s + \beta = -\,\mathbf{n}_q \cdot \mathbf{d}.$$
 
-Solving this 2×2 system gives the closed form (Morita eq. 2):
+Solving this $2\times 2$ system gives the closed form (Morita eq. 2):
 
 $$\mathbf{c}(\mathbf{d}, \mathbf{n}_0, \mathbf{n}_1) =
 \frac{1}{1 - c_s^2}\,
