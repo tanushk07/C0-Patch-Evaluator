@@ -2,7 +2,7 @@
 
 #include "Vector3.h"
 #include "Mesh.h"
-
+#include "Evaluator.h"
 using namespace std;
 
 class MakeSphereMesh

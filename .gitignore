@@ -31,10 +31,6 @@ compile_commands.json
 # JetBrains local project files
 .idea/
 
-# Generated mesh outputs
-Flat_Patch.obj
-Nagata_Patch.obj
-
 # OS files
 Thumbs.db
 .DS_Store

@@ -144,18 +144,12 @@ $$\mathbf{x}(t,t) = \mathbf{c}_{00} + (\mathbf{c}_{10} + \mathbf{c}_{01})t + (\m
 
 Matching to
 
-$$\mathbf{V}_0 + (\mathbf{V}_2 - \mathbf{V}_0 - \mathbf{c}_C)t + \mathbf{c}_C t^2$$
+$$\mathbf{V}_{0} + (\mathbf{V}_{2} - \mathbf{V}_{0} - \mathbf{c}_{C})t + \mathbf{c}_{C} t^2$$
 
 gives
 
-$$\mathbf{c}_{10} + \mathbf{c}_{01} = (\mathbf{V}_2 - \mathbf{V}_0) - \mathbf{c}_C, \qquad \mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02} = \mathbf{c}_C.$$
+$$\mathbf{c}_{10} + \mathbf{c}_{01} = (\mathbf{V}_{2} - \mathbf{V}_{0}) - \mathbf{c}_{C}, \qquad \mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02} = \mathbf{c}_{C}.$$
 
-Solving the three groups together gives the six coefficients:
-
-$$\begin{aligned}
-\mathbf{c}_{00} &= \mathbf{V}_0 & \mathbf{c}_{01} &= (\mathbf{V}_1 - \mathbf{V}_0) - \mathbf{c}_A & \mathbf{c}_{02} &= \mathbf{c}_A \\
-\mathbf{c}_{20} &= \mathbf{c}_B & \mathbf{c}_{10} &= (\mathbf{V}_2 - \mathbf{V}_1) + \mathbf{c}_A - \mathbf{c}_C & \mathbf{c}_{11} &= \mathbf{c}_C - \mathbf{c}_A - \mathbf{c}_B
-\end{aligned}$$
 Solving the three groups together gives the six coefficients:
 
 $$\begin{aligned}
@@ -308,9 +302,9 @@ pattern.
 
 - **Coefficient sign discrepancy.** The printed $\mathbf{c}_{11}$ term differs in
   sign between the source papers. The value derived here from the edge curves,
-  $\mathbf{c}_{11} = \mathbf{c}_C - \mathbf{c}_A - \mathbf{c}_B$, is the one that
+  $\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}$, is the one that
   passes vertex recovery at the third corner; the alternative sign misses the
-  corner by $2\mathbf{c}_B$. Coefficients were derived from the boundary
+  corner by $2\mathbf{c}_{B}$. Coefficients were derived from the boundary
   conditions rather than transcribed.
 
 - **C0 does not reproduce corner normals in general.** Normal recovery passes on
