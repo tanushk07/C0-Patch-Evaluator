@@ -153,7 +153,9 @@ $$\mathbf{c}_{10} + \mathbf{c}_{01} = (\mathbf{V}_{2} - \mathbf{V}_{0}) - \mathb
 Solving the three groups together gives the six coefficients:
 
 $$\begin{aligned}
-\mathbf{c}_{00} &= \mathbf{V}_0 & \mathbf{c}_{01} &= (\mathbf{V}_1 - \mathbf{V}_0) - \mathbf{c}_A & \mathbf{c}_{02} &= \mathbf{c}_A \\[2pt]
+\mathbf{c}_{00} &= \mathbf{V}_0 & \mathbf{c}_{01} &= (\mathbf{V}_1 - \mathbf{V}_0) - \mathbf{c}_A & \mathbf{c}_{02} &= \mathbf{c}_A 
+\end{aligned}$$
+$$\begin{aligned}
 \mathbf{c}_{20} &= \mathbf{c}_B & \mathbf{c}_{10} &= (\mathbf{V}_2 - \mathbf{V}_1) + \mathbf{c}_A - \mathbf{c}_C & \mathbf{c}_{11} &= \mathbf{c}_C - \mathbf{c}_A - \mathbf{c}_B
 \end{aligned}$$
 
