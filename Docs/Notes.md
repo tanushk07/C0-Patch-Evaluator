@@ -119,21 +119,43 @@ domain reproduces one Stage-1 curve.
 ![Parameter domain](param_triangle.svg)
 
 **Left edge** ($\eta = 0$, from $V_0$ to $V_1$). The patch reduces to
-$\mathbf{x}(0,\zeta) = \mathbf{c}_{00} + \mathbf{c}_{01}\zeta + \mathbf{c}_{02}\zeta^2$.
-Matching it to the Stage-1 curve $\mathbf{V}_0 + (\mathbf{V}_1 - \mathbf{V}_0 - \mathbf{c}_A)\zeta + \mathbf{c}_A\zeta^2$:
+
+$$\mathbf{x}(0,\zeta) = \mathbf{c}_{00} + \mathbf{c}_{01}\zeta + \mathbf{c}_{02}\zeta^2.$$
+
+Matching it to the Stage-1 curve
+
+$$\mathbf{V}_0 + (\mathbf{V}_1 - \mathbf{V}_0 - \mathbf{c}_A)\zeta + \mathbf{c}_A\zeta^2$$
+
+gives:
 
 $$\mathbf{c}_{00} = \mathbf{V}_0, \qquad \mathbf{c}_{01} = (\mathbf{V}_1 - \mathbf{V}_0) - \mathbf{c}_A, \qquad \mathbf{c}_{02} = \mathbf{c}_A.$$
 
 **Top edge** ($\zeta = 1$, from $V_1$ to $V_2$). Here
-$\mathbf{x}(\eta,1) = (\mathbf{c}_{00} + \mathbf{c}_{01} + \mathbf{c}_{02}) + (\mathbf{c}_{10} + \mathbf{c}_{11})\eta + \mathbf{c}_{20}\eta^2$.
-Matching gives $\mathbf{c}_{20} = \mathbf{c}_B$ and $\mathbf{c}_{10} + \mathbf{c}_{11} = (\mathbf{V}_2 - \mathbf{V}_1) - \mathbf{c}_B$.
+
+$$\mathbf{x}(\eta,1) = (\mathbf{c}_{00} + \mathbf{c}_{01} + \mathbf{c}_{02}) + (\mathbf{c}_{10} + \mathbf{c}_{11})\eta + \mathbf{c}_{20}\eta^2.$$
+
+Matching gives $\mathbf{c}_{20} = \mathbf{c}_B$ and
+
+$$\mathbf{c}_{10} + \mathbf{c}_{11} = (\mathbf{V}_2 - \mathbf{V}_1) - \mathbf{c}_B.$$
 
 **Diagonal** ($\eta = \zeta$, from $V_0$ to $V_2$). Here
-$\mathbf{x}(t,t) = \mathbf{c}_{00} + (\mathbf{c}_{10} + \mathbf{c}_{01})t + (\mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02})t^2$.
-Matching to $\mathbf{V}_0 + (\mathbf{V}_2 - \mathbf{V}_0 - \mathbf{c}_C)t + \mathbf{c}_C t^2$ gives
-$\mathbf{c}_{10} + \mathbf{c}_{01} = (\mathbf{V}_2 - \mathbf{V}_0) - \mathbf{c}_C$ and
-$\mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02} = \mathbf{c}_C$.
 
+$$\mathbf{x}(t,t) = \mathbf{c}_{00} + (\mathbf{c}_{10} + \mathbf{c}_{01})t + (\mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02})t^2.$$
+
+Matching to
+
+$$\mathbf{V}_0 + (\mathbf{V}_2 - \mathbf{V}_0 - \mathbf{c}_C)t + \mathbf{c}_C t^2$$
+
+gives
+
+$$\mathbf{c}_{10} + \mathbf{c}_{01} = (\mathbf{V}_2 - \mathbf{V}_0) - \mathbf{c}_C, \qquad \mathbf{c}_{11} + \mathbf{c}_{20} + \mathbf{c}_{02} = \mathbf{c}_C.$$
+
+Solving the three groups together gives the six coefficients:
+
+$$\begin{aligned}
+\mathbf{c}_{00} &= \mathbf{V}_0 & \mathbf{c}_{01} &= (\mathbf{V}_1 - \mathbf{V}_0) - \mathbf{c}_A & \mathbf{c}_{02} &= \mathbf{c}_A \\
+\mathbf{c}_{20} &= \mathbf{c}_B & \mathbf{c}_{10} &= (\mathbf{V}_2 - \mathbf{V}_1) + \mathbf{c}_A - \mathbf{c}_C & \mathbf{c}_{11} &= \mathbf{c}_C - \mathbf{c}_A - \mathbf{c}_B
+\end{aligned}$$
 Solving the three groups together gives the six coefficients:
 
 $$\begin{aligned}
@@ -178,9 +200,11 @@ parameters must return the input vertices:
 
 $$\mathbf{x}(0,0) = \mathbf{V}_0, \qquad \mathbf{x}(0,1) = \mathbf{V}_1, \qquad \mathbf{x}(1,1) = \mathbf{V}_2.$$
 
-The check is $\lVert \mathbf{x}(\text{corner}) - \mathbf{V}_i \rVert \approx 0$.
-This is the test that catches a wrong $\mathbf{c}_{11}$ sign (see findings).
+The check is
 
+$$\lVert \mathbf{x}(\text{corner}) - \mathbf{V}_i \rVert \approx 0.$$
+
+This is the test that catches a wrong $\mathbf{c}_{11}$ sign (see findings).
 ### 4.3 Normal recovery (checks the coefficients)
 
 At a corner, the patch normal should be parallel to the given vertex normal.
@@ -257,6 +281,7 @@ resolution being swept, and separate again from the display tessellation used
 when exporting an OBJ. They are three different knobs: how fine the stored mesh
 is, how densely it is measured, and how densely it is drawn. Only the first is
 the "cost" being compared. This sweep is what produces the results below.
+
 ---
 
 ## 7. Results (sphere, radius 1)
