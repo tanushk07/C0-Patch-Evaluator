@@ -302,11 +302,11 @@ pattern.
 
 ## 8. Findings and known limitations
 
-- **Coefficient sign discrepancy.** The printed $\mathbf{c}_{11}$ term differs in
+- **Coefficient sign discrepancy.** The printed $`\mathbf{c}_{11}`$ term differs in
   sign between the source papers. The value derived here from the edge curves,
-  $\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}$, is the one that
+  $`\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}`$, is the one that
   passes vertex recovery at the third corner; the alternative sign misses the
-  corner by $2\mathbf{c}_{B}$. Coefficients were derived from the boundary
+  corner by $`2\mathbf{c}_{B}`$. Coefficients were derived from the boundary
   conditions rather than transcribed.
 
 - **C0 does not reproduce corner normals in general.** Normal recovery passes on
