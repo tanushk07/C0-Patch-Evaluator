@@ -2,6 +2,10 @@
 
 Reconstructing smooth curved surfaces from a triangle mesh using **C0 Nagata patches** (Nagata, 2005): each triangle's three vertices and their three normals define a quadratic patch that curves to follow the surface. This project implements the patch evaluator, verifies it against analytic surfaces (sphere and torus), and quantifies how much more accurately Nagata patches approximate a curved surface than flat triangles at the same mesh resolution.
 
+## Documentation
+
+**[Docs/Notes.md](Docs/Notes.md)** is the full write-up behind this code: the motivation, the derivation of the patch coefficients from first principles, the verification tests, the error metrics for the sphere and torus, the resolution experiment, and the findings and known limitations.
+
 ## Headline result
 
 Error against the true surface, measured as the maximum distance from the analytic shape, across mesh resolutions. Both methods use the same control mesh and the same sampling; only flat-vs-curved differs.
@@ -119,6 +123,7 @@ The 331x figure in Test 4 is the max-error ratio at a single resolution (2048 tr
 - `Core/` — evaluator (`Evaluator.cpp`, `Evaluator.h`) and entry point (`Main.cpp`)
 - `Tests/` — the four correctness tests
 - `Utils/` — vector math, mesh structs, sphere and torus mesh generators, error-stats struct
+- `Docs/`: [Notes.md](Docs/Notes.md) (full derivation and findings), plus the figures used in this README
 
 ## Scope and notes
 
