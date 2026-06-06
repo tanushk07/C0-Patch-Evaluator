@@ -137,3 +137,6 @@ T. Nagata, "Simple local interpolation of surfaces using normal vectors,"
 Y. Nishidate et al., "Ray-tracing method for isotropic inhomogeneous
 refractive-index media from arbitrary discrete input." (This paper's form of the
 $\mathbf{c}_{11}$ coefficient matches the sign derived here.)
+
+K. Morita et al., "Ray-tracing simulation method using piecewise quadratic
+interpolant for aspheric optical systems," *Applied Optics*, 2010.

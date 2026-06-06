@@ -310,8 +310,7 @@ This section records both what a reader should know about the method and the par
 
 - **Comparing flat against Nagata fairly.** Both interpolants pass exactly through the three corners, so comparing them at the vertices shows nothing; the error is zero there for both. The error lives in the triangle interior, which is why the measurement samples interior points and evaluates both surfaces on the same parameter grid. Getting this right is what makes the comparison meaningful rather than a measurement of nothing.
 
-- **Coefficient sign discrepancy.** The $`\mathbf{c}_{11}`$ term differs in sign between Nagata's 2005 paper and Nishidate's ray-tracing paper. The value derived here from the edge curves, $`\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}`$, is the one that passes vertex recovery at the third corner; the alternative sign misses the corner by $`2\mathbf{c}_{B}`$. (The form in Nishidate's paper matches the sign derived here.) The coefficients were derived from the boundary conditions rather than transcribed, which is how the discrepancy surfaced.
-
+- **Coefficient sign discrepancy.** Morita's paper and Nishidate's paper print the patch coefficients in slightly different forms, and the $`\mathbf{c}_{11}`$ term disagrees in sign between them. Worked out from the edge curves, the correct value is $`\mathbf{c}_{11} = \mathbf{c}_C - \mathbf{c}_A - \mathbf{c}_B`$, which is the form Nishidate's paper uses and the one that passes vertex recovery at the third corner; Morita's printed sign flips the $`\mathbf{c}_B`$ term and misses that corner by $`2\mathbf{c}_B`$. I derived the coefficients from the boundary conditions rather than transcribing them, which is how the mismatch came to light.
 - **C0 does not reproduce corner normals in general.** Normal recovery passes on the symmetric sphere octant, but C0 guarantees only position continuity across shared edges, not tangent-plane continuity. Matching prescribed corner normals is a G1 property. C0 is the foundation; G1 is the natural next step.
 
 - **Quad triangulation.** An early sphere generator split each quad into the wrong pair of triangles. The two faces shared the bottom edge ($i_0, i_2, i_1$ and $i_0, i_1, i_3$) instead of splitting along one diagonal ($i_0, i_2, i_1$ and $i_1, i_2, i_3$), so each quad was half-covered with an overlap and half left as a hole. The cause was found by reading the exported OBJ directly rather than trusting the render, and fixed by using one consistent diagonal per quad.
@@ -338,3 +337,6 @@ T. Nagata, "Simple local interpolation of surfaces using normal vectors,"
 Y. Nishidate et al., "Ray-tracing method for isotropic inhomogeneous
 refractive-index media from arbitrary discrete input." (This paper's form of the
 $\mathbf{c}_{11}$ coefficient matches the sign derived here.)
+
+K. Morita et al., "Ray-tracing simulation method using piecewise quadratic
+interpolant for aspheric optical systems," *Applied Optics*, 2010.
