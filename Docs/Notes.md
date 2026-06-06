@@ -300,36 +300,33 @@ pattern.
 
 ---
 
-## 8. Findings and known limitations
+## 8. Findings, difficulties, and known limitations
 
-- **Coefficient sign discrepancy.** The printed $`\mathbf{c}_{11}`$ term differs in
-  sign between the source papers. The value derived here from the edge curves,
-  $`\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}`$, is the one that
-  passes vertex recovery at the third corner; the alternative sign misses the
-  corner by $`2\mathbf{c}_{B}`$. Coefficients were derived from the boundary
-  conditions rather than transcribed.
+This section records both what a reader should know about the method and the parts that were genuinely hard to work out while building it.
 
-- **C0 does not reproduce corner normals in general.** Normal recovery passes on
-  the symmetric sphere octant, but C0 guarantees only position continuity across
-  shared edges, not tangent-plane continuity. Matching prescribed corner normals
-  is a G1 property. C0 is the foundation; G1 is the natural next step.
+- **The third condition on the curvature vector.** The two perpendicularity conditions give only two equations for a three-component vector, so the system is underdetermined. The step that took the most thought was recognising that the missing third condition is a modelling choice rather than something the paper supplies: the leftover freedom is the component of $`\mathbf{c}`$ pointing out of the plane of the two normals, and dropping it (keeping the shortest $`\mathbf{c}`$ that still satisfies the conditions) is what makes the system solvable. Section 3.1 gives the resolved derivation.
 
-- **Quad triangulation.** An early sphere generator split each quad along two
-  different diagonals, which overlapped one half and left a hole on the other.
-  Found by reading the exported OBJ directly. Fixed by using one consistent
-  diagonal per quad.
+- **The test geometry had to be built from scratch.** The papers describe the patch, not the surfaces to test it on. Generating the sphere and torus meshes with correct vertices and normals, and writing the distance functions that measure error against each true surface (section 5), was a separate piece of work. The torus in particular needed its own derivation: the in-plane distance to the centreline ring, then the distance from that ring, then the comparison to the tube radius.
 
-- **Torus normal orientation.** The reference-based normal flip used for the OBJ
-  export works on the sphere but produces inconsistent normals on the concave
-  inner wall of the torus tube, where "outward" reverses direction. This is a
-  limitation of assuming a globally consistent outward direction, and it is
-  cosmetic (it does not affect the error colors or geometry). It connects to the
-  open research question of handling inconsistent or noisy normals.
+- **Comparing flat against Nagata fairly.** Both interpolants pass exactly through the three corners, so comparing them at the vertices shows nothing; the error is zero there for both. The error lives in the triangle interior, which is why the measurement samples interior points and evaluates both surfaces on the same parameter grid. Getting this right is what makes the comparison meaningful rather than a measurement of nothing.
 
-- **Storage versus compute.** Nagata uses far fewer control triangles for equal
-  accuracy, but each sample costs more arithmetic (the quadratic plus the
-  curvature setup). It is fewer triangles for more math per triangle, a trade
-  that favors Nagata for smooth surfaces.
+- **Coefficient sign discrepancy.** The $`\mathbf{c}_{11}`$ term differs in sign between Nagata's 2005 paper and Nishidate's ray-tracing paper. The value derived here from the edge curves, $`\mathbf{c}_{11} = \mathbf{c}_{C} - \mathbf{c}_{A} - \mathbf{c}_{B}`$, is the one that passes vertex recovery at the third corner; the alternative sign misses the corner by $`2\mathbf{c}_{B}`$. (The form in Nishidate's paper matches the sign derived here.) The coefficients were derived from the boundary conditions rather than transcribed, which is how the discrepancy surfaced.
+
+- **C0 does not reproduce corner normals in general.** Normal recovery passes on the symmetric sphere octant, but C0 guarantees only position continuity across shared edges, not tangent-plane continuity. Matching prescribed corner normals is a G1 property. C0 is the foundation; G1 is the natural next step.
+
+- **Quad triangulation.** An early sphere generator split each quad into the wrong pair of triangles. The two faces shared the bottom edge ($i_0, i_2, i_1$ and $i_0, i_1, i_3$) instead of splitting along one diagonal ($i_0, i_2, i_1$ and $i_1, i_2, i_3$), so each quad was half-covered with an overlap and half left as a hole. The cause was found by reading the exported OBJ directly rather than trusting the render, and fixed by using one consistent diagonal per quad.
+
+- **Torus normal orientation.** The reference-based normal flip used for the OBJ export works on the sphere but produces inconsistent normals on the concave inner wall of the torus tube, where "outward" reverses direction. This is a limitation of assuming a globally consistent outward direction, and it is cosmetic (it does not affect the error colors or geometry). It connects to the open research question of handling inconsistent or noisy normals.
+
+- **Storage versus compute.** Nagata uses far fewer control triangles for equal accuracy, but each sample costs more arithmetic (the quadratic plus the curvature setup). It is fewer triangles for more math per triangle, a trade that favors Nagata for smooth surfaces.
+
+---
+
+## 9. Connection to mesh simplification
+
+This evaluator is the measurement layer a simplification method would sit on, not the simplification itself. Real simplification removes one edge at a time, checks how far the surface has moved from the original, and decides whether to continue, with no clean resolution levels and no analytic surface to compare against. What is built here is that distance check, together with the evidence that the lever is worth pulling: because a Nagata surface is so much closer to the true surface at a given triangle count (sections 6 and 7), a mesh built from Nagata patches can be reduced much further than a flat one before it exceeds the same error budget.
+
+C0 has a boundary that is relevant to this. It guarantees that two neighbouring patches meet along their shared edge with no gap, but it does not constrain the direction the surface faces as the edge is crossed, so two patches can meet along the same line while their tangent planes disagree. G1 is not implemented here, so this is stated as the next direction rather than something measured: the G1 extension exists to make neighbouring patches share a facing direction across an edge, which is what would allow a mesh to be simplified more aggressively while still appearing smooth. That boundary between C0 and G1 is the part of the research direction that interests me most.
 
 ---
 

@@ -15,6 +15,7 @@ set(C0EVAL_SOURCES
 )
 
 set(C0EVAL_DOCS
+        README.md
         Docs/comparison.png
         Docs/Notes.md
         Docs/edge_curve.svg
