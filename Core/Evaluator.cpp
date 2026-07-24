@@ -11,11 +11,27 @@
 #include "MakeSphereMesh.h"
 using namespace std;
 
-Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd)
+Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureStatus* status)
 {
+    nStart = nStart.normalize();
+    nEnd   = nEnd.normalize();
+    
     float cs = nStart.dot(nEnd);
-    if (std::abs(cs) > 1.0f - 1e-6f) return {0, 0, 0};
+    cs = std::max(-1.0f, std::min(1.0f, cs));
+    if (std::abs(cs) > 1.0f - 1e-6f)
+    {
+        if (status) *status = CurvatureStatus::Parallel;
+        return {0, 0, 0};
+    }
+    
+    if (std::abs(cs) < -1.0f + 1e-6f)
+    {
+        if (status) *status = CurvatureStatus::Antiparallel;
+        return {0, 0, 0};
+    }
+    if (status) *status = CurvatureStatus::Ok;
 
+    
     float a = nStart.dot(d);
     float b = nEnd.dot(d);
 
@@ -24,11 +40,11 @@ Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd)
 
 coefficients Evaluator::MakeCoefficients(const vector<Vector3>& vertices, const vector<Vector3>& normals)
 {
-    Vector3 curvA = Curvature(vertices[1] - vertices[0], normals[0], normals[1]);
-    Vector3 curvB = Curvature(vertices[2] - vertices[1], normals[1], normals[2]);
-    Vector3 curvC = Curvature(vertices[2] - vertices[0], normals[0], normals[2]);
-
     coefficients co;
+    Vector3 curvA = Curvature(vertices[1] - vertices[0], normals[0], normals[1], &co.status[0]);
+    Vector3 curvB = Curvature(vertices[2] - vertices[1], normals[1], normals[2], &co.status[1]);
+    Vector3 curvC = Curvature(vertices[2] - vertices[0], normals[0], normals[2], &co.status[2]);
+
     co.c00 = vertices[0];
     co.c01 = (vertices[1] - vertices[0]) - curvA;
     co.c02 = curvA;

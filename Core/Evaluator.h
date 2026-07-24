@@ -12,16 +12,17 @@ using ErrorMetric = function<float(Vector3)>;
 struct ErrorStats;
 struct Mesh;
 
+enum class CurvatureStatus { Ok, Parallel, Antiparallel };
 struct coefficients
 {
     Vector3 c00,c11,c10,c01,c20,c02;
+    CurvatureStatus status[3];
 };
-
     
 class Evaluator
 {
     public:
-    static Vector3 Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd);
+    static Vector3 Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureStatus *status = nullptr);
     static coefficients MakeCoefficients( const vector<Vector3>& vertices, const vector<Vector3>& normals);
     static Vector3 EvalPatch(const coefficients& c, float eta, float zeta);
     static Vector3 EvalNormal(const coefficients& c, float eta, float zeta);

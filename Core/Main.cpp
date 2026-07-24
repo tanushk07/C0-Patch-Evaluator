@@ -29,7 +29,17 @@ int main()
     if (Tests::Test3_NormalRecovery(c, norms))         passed++;
     if (Tests::Test4_Accuracy(sphere, sphereError))    passed++;
     cout << "\nResults: " << passed << "/" << total << " tests passed\n";
-
+    
+    Mesh torusCheck;
+    MakeTorusMesh(5.0f, 3.0f, 20, 10, torusCheck);
+    total += 4;
+    if (Tests::Test5_ResidualSweep("sphere 32x32", sphere))      passed++;
+    if (Tests::Test5_ResidualSweep("torus 20x10",  torusCheck))  passed++;
+    if (Tests::Test6_Topology("sphere 32x32", sphere,     2))    passed++;
+    if (Tests::Test6_Topology("torus 20x10",  torusCheck, 0))    passed++;
+ 
+    cout << "\nResults: " << passed << "/" << total << " tests passed\n";
+    
     // Prints, for sphere and torus, how flat-triangle error and Nagata-patch error shrink as the control mesh is refined.
     Evaluator::RunSimplificationExperiment();
 
