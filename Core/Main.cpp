@@ -28,7 +28,6 @@ int main()
     if (Tests::Test2_VertexRecovery(c, verts))         passed++;
     if (Tests::Test3_NormalRecovery(c, norms))         passed++;
     if (Tests::Test4_Accuracy(sphere, sphereError))    passed++;
-    cout << "\nResults: " << passed << "/" << total << " tests passed\n";
     
     Mesh torusCheck;
     MakeTorusMesh(5.0f, 3.0f, 20, 10, torusCheck);

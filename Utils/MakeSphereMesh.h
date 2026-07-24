@@ -25,7 +25,7 @@ public:
         {
             float theta = pi * static_cast<float>(r) / rings;
             float st = std::sin(theta), ct = std::cos(theta);
-            for (int j = 0; j <= sectors; ++j)
+            for (int j = 0; j < sectors; ++j)
             {
                 float phi = 2.0f * pi * j / sectors;
                 float x = radius * st * std::cos(phi);

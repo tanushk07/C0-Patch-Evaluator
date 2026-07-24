@@ -5,8 +5,7 @@
 #include "Vector3.h"
 #include <utility>
 #include <fstream>
-#include <MakeTorusMesh.h>
-
+#include "MakeTorusMesh.h"
 #include "ErrorStats.h"
 #include "MakeSphereMesh.h"
 using namespace std;
@@ -18,13 +17,13 @@ Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureS
     
     float cs = nStart.dot(nEnd);
     cs = std::max(-1.0f, std::min(1.0f, cs));
-    if (std::abs(cs) > 1.0f - 1e-6f)
+    if (cs > 1.0f - 1e-6f)
     {
         if (status) *status = CurvatureStatus::Parallel;
         return {0, 0, 0};
     }
     
-    if (std::abs(cs) < -1.0f + 1e-6f)
+    if (cs < -1.0f + 1e-6f)
     {
         if (status) *status = CurvatureStatus::Antiparallel;
         return {0, 0, 0};
