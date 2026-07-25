@@ -25,9 +25,9 @@ class Evaluator
     static Vector3 EvalPatch(const coefficients& c, float eta, float zeta);
     static Vector3 EvalNormal(const coefficients& c, float eta, float zeta);
     static Vector3 EvalFlat(const std::vector<Vector3>& verts, float eta, float zeta);
-    static void WriteFlatObj(const Mesh& sphereMesh, const char* filename);
     static ErrorStats MeasureError(const Mesh& Mesh, const ErrorMetric &Error, int N);
     static void RunSimplificationExperiment();
+    static bool IsDegenerate(const Mesh& mesh, const struct Tri& t);
     static void WriteFlatErrorObj(const Mesh& Mesh, const char* filename, int N,const ErrorMetric& error, float maxError);
     static void WriteNagataErrorObj( const Mesh& Mesh, const char * filename, int N, const ErrorMetric& error, float maxError);
 };

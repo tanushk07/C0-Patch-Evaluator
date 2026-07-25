@@ -84,13 +84,35 @@ namespace {
     }
 }
 
+// A triangle is degenerate if two corners are the same vertex, or if its area is
+// negligible compared with its own size. The test is RELATIVE (area against the
+// longest edge squared) so it is scale independent: a mesh scaled up by 1000
+// classifies exactly the same triangles as the original.
+bool Evaluator::IsDegenerate(const Mesh& mesh, const Tri& t)
+{
+    if (t.a == t.b || t.b == t.c || t.a == t.c) return true;
+
+    const Vector3& v0 = mesh.vertices[t.a];
+    const Vector3& v1 = mesh.vertices[t.b];
+    const Vector3& v2 = mesh.vertices[t.c];
+
+    double twiceArea = ((v1 - v0).cross(v2 - v0)).length();
+    double e0 = (v1 - v0).length();
+    double e1 = (v2 - v1).length();
+    double e2 = (v0 - v2).length();
+    double longest = max(e0, max(e1, e2));
+
+    if (longest <= 0.0) return true;
+    return twiceArea < 1e-6 * longest * longest;
+}
+
 Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureStatus* status)
 {
     nStart = nStart.normalize();
     nEnd   = nEnd.normalize();
     
-    float cs = nStart.dot(nEnd);
-    cs = std::max(-1.0f, std::min(1.0f, cs));
+    double cs = nStart.dot(nEnd);
+    cs = std::max(-1.0, std::min(1.0, cs));
     if (cs > 1.0f - 1e-6f)
     {
         if (status) *status = CurvatureStatus::Parallel;
@@ -105,8 +127,8 @@ Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureS
     if (status) *status = CurvatureStatus::Ok;
 
     
-    float a = nStart.dot(d);
-    float b = nEnd.dot(d);
+    double a = nStart.dot(d);
+    double b = nEnd.dot(d);
 
     return ((a + cs * b) * nStart - (cs * a + b) * nEnd) / (1 - cs * cs);
 }
@@ -148,25 +170,13 @@ Vector3 Evaluator::EvalFlat(const vector<Vector3>& verts, float eta, float zeta)
     return verts[0] + (verts[1] - verts[0]) * zeta + (verts[2] - verts[1]) * eta;
 }
 
-void Evaluator::WriteFlatObj(const Mesh &sphereMesh, const char* filename)
-{
-    std::ofstream file(filename);
-    
-    for (auto v: sphereMesh.vertices)
-    {
-        file <<"v "<< v.x << " " << v.y << " " << v.z << "\n";
-    }
-    for (auto n: sphereMesh.triangles)
-    {
-        file <<"f "<< n.a + 1 << " " << n.b +1  << " " << n.c +1 << "\n";
-    }
-}
 void Evaluator::WriteFlatErrorObj(const Mesh &Mesh, const char* filename, int N,const ErrorMetric& error, float maxError)
 {
     std::ofstream file(filename);
     long long vertexcounter = 0;
     for (auto v: Mesh.triangles)
     {
+        if (IsDegenerate(Mesh, v)) continue;
         vector<Vector3> verts = {Mesh.vertices[v.a], Mesh.vertices[v.b], Mesh.vertices[v.c]};
         vector<vector<int>> localInd(N+1);
         for (int i = 0; i <= N; ++i)
@@ -209,6 +219,7 @@ void Evaluator::WriteNagataErrorObj( const Mesh& Mesh, const char * filename, in
     
     for (auto p : Mesh.triangles)
     {
+        if (IsDegenerate(Mesh, p)) continue;
         vector<Vector3> verts = {Mesh.vertices[p.a], Mesh.vertices[p.b], Mesh.vertices[p.c]};
         vector<Vector3> norms = {Mesh.normals[p.a], Mesh.normals[p.b], Mesh.normals[p.c]};
         coefficients c = MakeCoefficients(verts, norms);
@@ -273,9 +284,7 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , i
         vector<Vector3> verts = {Mesh.vertices[T.a], Mesh.vertices[T.b], Mesh.vertices[T.c]};
         vector<Vector3> norms = {Mesh.normals[T.a], Mesh.normals[T.b], Mesh.normals[T.c]};
         
-        // skip zero-area (pole) triangles so we measure exactly what gets rendered
-        float triangleArea = 0.5f * ((verts[1] - verts[0]).cross(verts[2] - verts[0])).length();
-        if (triangleArea < 1e-6f) continue;
+        if (IsDegenerate(Mesh, T)) continue;
         
         coefficients c = MakeCoefficients(verts, norms);
         for (int j = 0; j <= N; j++)
