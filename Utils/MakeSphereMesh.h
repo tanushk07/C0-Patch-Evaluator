@@ -23,7 +23,7 @@ public:
         
         for (int r = 1; r <= rings-1; ++r)
         {
-            float theta = pi * static_cast<float>(r) / rings;
+            double theta = pi * static_cast<float>(r) / rings;
             float st = std::sin(theta), ct = std::cos(theta);
             for (int j = 0; j < sectors; ++j)
             {

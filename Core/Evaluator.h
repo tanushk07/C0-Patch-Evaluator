@@ -5,7 +5,7 @@
 #include "Vector3.h"
 
 inline constexpr float TOL = 1e-5f;
-inline constexpr float pi = 3.14159265358979323846f;
+inline constexpr double pi = 3.14159265358979323846f;
 using ErrorMetric = std::function<float(Vector3)>;
 struct ErrorStats;
 struct Mesh;

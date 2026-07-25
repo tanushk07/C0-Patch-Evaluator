@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Evaluator.h"
-#include "MakeSphereMesh.h"
+#include "Mesh.h"
 
 class MakeTorusMesh
 {

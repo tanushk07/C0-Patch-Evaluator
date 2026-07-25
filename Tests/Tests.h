@@ -96,7 +96,7 @@ public:
         cout << "Max Nagata error:  " << stats.maxNagata << endl;
         cout << "Avg flat error:    " << stats.avgFlat << endl;
         cout << "Avg Nagata error:  " << stats.avgNagata << endl;
-        cout << "Improvement ratio: " << stats.ratio << "x  (scale-invariant)\n";
+        cout << "Ratio at this resolution: " << stats.ratio << "x\n";
 
         bool pass = (stats.maxNagata < stats.maxFlat);
         cout << "  Nagata < flat?     " << (pass ? "PASS" : "FAIL") << "\n";

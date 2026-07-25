@@ -8,7 +8,81 @@
 #include "MakeTorusMesh.h"
 #include "ErrorStats.h"
 #include "MakeSphereMesh.h"
+#include <iomanip>
+#include <sstream>
+#include <string>
+
 using namespace std;
+
+namespace {
+    // Inner width of each column (padding of one space is added on each side).
+    constexpr int kColW[]   = {5, 8, 12, 12, 8, 8, 9};
+    constexpr int kNumCols  = 7;
+
+    // Format a double into a fixed-precision string so we can right-align it
+    // inside a cell (streaming directly into cout makes width control fiddly).
+    string Fmt(double v, int prec, bool sci)
+    {
+        ostringstream os;
+        os << (sci ? scientific : fixed) << setprecision(prec) << v;
+        return os.str();
+    }
+
+    // "+------+--------+ ... +" border line matching the column widths.
+    string Separator()
+    {
+        string s = "+";
+        for (int i = 0; i < kNumCols; ++i)
+            s += string(kColW[i] + 2, '-') + "+";
+        return s;
+    }
+
+    // Print one "| a | b | ... |" row from already-formatted cell strings.
+    void PrintRow(const string cells[])
+    {
+        cout << "|";
+        for (int i = 0; i < kNumCols; ++i)
+            cout << " " << right << setw(kColW[i]) << cells[i] << " |";
+        cout << "\n";
+    }
+
+    void PrintSweepHeader(const char* title)
+    {
+        const string head[kNumCols] =
+            {"res", "tris", "maxFlat", "maxNagata", "flat/x", "nag/x", "ratio"};
+        cout << "\n" << title << "\n"
+             << Separator() << "\n";
+        PrintRow(head);
+        cout << Separator() << "\n";
+    }
+
+    void PrintSweepRow(int res, size_t tris, double maxFlat, double maxNagata,
+                       double prevF, double prevN)
+    {
+        string cells[kNumCols];
+        cells[0] = to_string(res);
+        cells[1] = to_string(tris);
+        cells[2] = Fmt(maxFlat,   3, true);
+        cells[3] = Fmt(maxNagata, 3, true);
+        if (prevF > 0)
+        {
+            cells[4] = Fmt(prevF / maxFlat, 2, false);
+            cells[5] = Fmt(prevN / maxNagata, 2, false);
+        }
+        else
+        {
+            cells[4] = "-";
+            cells[5] = "-";
+        }
+        cells[6] = Fmt(maxFlat / maxNagata, 1, false) + "x";
+        PrintRow(cells);
+    }
+
+    void PrintSweepFooter()
+    {
+        cout << Separator() << "\n";
+    }
+}
 
 Vector3 Evaluator::Curvature(Vector3 d, Vector3 nStart, Vector3 nEnd, CurvatureStatus* status)
 {
@@ -190,9 +264,9 @@ void Evaluator::WriteNagataErrorObj( const Mesh& Mesh, const char * filename, in
 
 ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , int N)
 {
-    float  maxFlat = 0, maxNagata = 0;
+    double  maxFlat = 0, maxNagata = 0;
     double sumFlat = 0, sumNagata = 0;
-    long long count = 0;
+    double count = 0;
     
     for (auto T: Mesh.triangles)
     {
@@ -214,8 +288,8 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , i
                 Vector3 pN = EvalPatch(c, eta, zeta);
                 Vector3 pF = EvalFlat(verts, eta, zeta);
                 
-                float errF = Error(pF);
-                float errN = Error(pN);
+                double errF = Error(pF);
+                double errN = Error(pN);
                 count++;
                 sumFlat += errF;
                 sumNagata += errN;
@@ -225,9 +299,9 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , i
         }
     }
     
-    float ratio = (maxNagata > 1e-10f) ? maxFlat / maxNagata : 0;
-    float avgFlat = count ? sumFlat / count : 0;
-    float avgNagata = count ? sumNagata / count : 0;
+    double ratio = (maxNagata > 1e-10f) ? maxFlat / maxNagata : 0;
+    double avgFlat = count ? sumFlat / count : 0;
+    double avgNagata = count ? sumNagata / count : 0;
     
     ErrorStats stats;
     stats.ratio = ratio;
@@ -241,37 +315,45 @@ ErrorStats Evaluator::MeasureError(const Mesh &Mesh,const ErrorMetric &Error , i
 }
 void Evaluator::RunSimplificationExperiment()
 {
-    float radius = 1.0f;
-    cout<<"Sphere:\n";
-    cout << "res\ttriangles\tmaxFlat\t\tmaxNagata\n";
+    // The drop columns are the real result. Flat triangles converge at order h^2
+    // (error falls ~4x per refinement), Nagata patches at order h^4 (~16x). The
+    // flat/Nagata ratio therefore GROWS ~4x each refinement, so no single ratio
+    // describes the method: quote the convergence orders instead.
+    const float radius = 1.0f;
+    double prevF = 0, prevN = 0;
+
+    PrintSweepHeader("Sphere:");
     for (int res : {4, 8, 16, 32, 64})
     {
         Mesh mesh;
-        MakeSphereMesh(radius, res, res,mesh);
+        MakeSphereMesh(radius, res, res, mesh);
         ErrorMetric sphereError = [radius](Vector3 p) {
             return std::abs(p.length() - radius);
         };
         ErrorStats p = MeasureError(mesh, sphereError, 20);
-        cout << res << "\t" << mesh.triangles.size()
-             << "\t\t" << p.maxFlat << "\t" << p.maxNagata << "\n";
+        PrintSweepRow(res, mesh.triangles.size(), p.maxFlat, p.maxNagata, prevF, prevN);
+        prevF = p.maxFlat;
+        prevN = p.maxNagata;
     }
-    
-    cout<<"Torus:\n";
-    
-    cout << "res\ttriangles\tmaxFlat\t\tmaxNagata\n";
+    PrintSweepFooter();
+
+    prevF = 0; prevN = 0;
+
+    PrintSweepHeader("Torus:");
     for (int res : {4, 8, 16, 32, 64})
     {
         Mesh mesh;
-        
         float Rc = 5.0f, Rt = 3.0f;
         ErrorMetric torusError = [Rc, Rt](Vector3 p) {
-            float q = std::sqrt(p.x*p.x + p.y*p.y) - Rc; 
-            float d = std::sqrt(q*q + p.z*p.z);         
-            return std::abs(d - Rt);                    
+            double q = std::sqrt(p.x*p.x + p.y*p.y) - Rc;
+            double d = std::sqrt(q*q + p.z*p.z);
+            return std::abs(d - Rt);
         };
-        MakeTorusMesh(Rc, Rt, res,res,mesh);
+        MakeTorusMesh(Rc, Rt, res, res, mesh);
         ErrorStats p = MeasureError(mesh, torusError, 20);
-        cout << res << "\t" << mesh.triangles.size()
-             << "\t\t" << p.maxFlat << "\t" << p.maxNagata << "\n";
+        PrintSweepRow(res, mesh.triangles.size(), p.maxFlat, p.maxNagata, prevF, prevN);
+        prevF = p.maxFlat;
+        prevN = p.maxNagata;
     }
+    PrintSweepFooter();
 }

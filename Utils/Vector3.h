@@ -4,8 +4,8 @@
 class Vector3
 {
 public:
-    float x, y, z;
-    Vector3(float x,float y,float z):x(x),y(y),z(z){};
+    double x, y, z;
+    Vector3(double x,double y,double z):x(x),y(y),z(z){};
     Vector3():x(0),y(0),z(0){};
     Vector3 operator+(Vector3 other) const
     {
@@ -24,12 +24,12 @@ public:
     {
         return Vector3(x/other , y/other , z/other);
     }
-    float length() const
+    double length() const
     {
         return (sqrt(x*x + y*y + z*z));
     }
     
-    float dot(Vector3 other) const
+    double dot(Vector3 other) const
     {
         return (x*other.x + y*other.y + z*other.z);
     }
