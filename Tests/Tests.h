@@ -35,8 +35,8 @@ public:
             ok &= pass;
 
             cout << "  " << names[e]
-                 << ":  |n_s.(d-c)|=" << e1
-                 << "  |n_e.(d+c)|=" << e2
+                 << ":  |n_s.(d-c)|/|d|=" << e1
+                 << "  |n_e.(d+c)|/|d|=" << e2
                  << "  " << (pass ? "OK" : "FAIL") << "\n";
         }
         return ok;
@@ -138,8 +138,8 @@ public:
         }
  
         cout << "  edges checked        " << checked << "\n";
-        cout << "  worst |n0.(d-c)|     " << worstE0 << "\n";
-        cout << "  worst |n1.(d+c)|     " << worstE1 << "\n";
+        cout << "  worst |n0.(d-c)|/|d| " << worstE0 << "\n";
+        cout << "  worst |n1.(d+c)|/|d| " << worstE1 << "\n";
         cout << "  flat edges (skipped) " << parallel << "\n";
         cout << "  opposed normals      " << antiparallel
              << (antiparallel ? "   <-- investigate" : "") << "\n";
