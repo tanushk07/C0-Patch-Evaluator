@@ -14,13 +14,13 @@ Error against the true surface, measured as the maximum distance from the analyt
 
 | Triangles | Flat max error | Nagata max error |
 |----------:|---------------:|-----------------:|
-| 32        | 0.3210         | 0.06066          |
-| 112       | 0.09121        | 0.004534         |
-| 480       | 0.02375        | 0.0002890        |
-| 1984      | 0.006002       | 0.00001812       |
-| 8064      | 0.001505       | 0.000001192      |
+|        24 | 0.3210         |          0.06066 |
+|       112 | 0.09121        |         0.004534 |
+|       480 | 0.02375        |        0.0002890 |
+|      1984 | 0.006002       |       0.00001816 |
+|      8064 | 0.001505       |      0.000001164 |
 
-On this Surface, Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 112 triangles (0.0045) is already more accurate than flat triangles at 1984 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
+Flat-triangle error falls about 4x per resolution doubling (order h²); on this surface Nagata error falls about 16x (order h⁴). **Nagata at 112 triangles (0.0045) is already more accurate than flat triangles at 1984 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
 
 **Torus (centerline radius 5, tube radius 3):**
 
@@ -73,10 +73,10 @@ All eight tests pass on the sphere and the torus.
 <summary>Full program output</summary>
 
 ```
-  Test 1: Orthogonality check
-  v0->v1:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
-  v1->v2:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
-  v0->v2:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
+ Test 1: Orthogonality check
+  v0->v1:  |n_s.(d-c)|/|d|=0  |n_e.(d+c)|/|d|=0  OK
+  v1->v2:  |n_s.(d-c)|/|d|=0  |n_e.(d+c)|/|d|=0  OK
+  v0->v2:  |n_s.(d-c)|/|d|=0  |n_e.(d+c)|/|d|=0  OK
 
 Test 2: Vertex recovery
   v0 (0,0):  error=0  PASS
@@ -88,7 +88,7 @@ Test 3: Normal recovery at vertices
   n1 (0,1):  |1-|dot||=0  PASS
   n2 (1,1):  |1-|dot||=0  PASS
 
-Test 4: Mesh accuracy  , 1984 triangles, 20 samples across the whole triangle's parameter grid)
+Test 4: Mesh accuracy  (1984 triangles, 20 samples across the whole triangle's parameter grid)
 Samples:           458304
 Max flat error:    0.00600242
 Max Nagata error:  1.81583e-05
@@ -99,16 +99,16 @@ Ratio at this resolution: 330.561x
 
 Test 5: Orthogonality residual sweep  (sphere 32x32)
   edges checked        5952
-  worst |n0.(d-c)|     1.25246e-08
-  worst |n1.(d+c)|     1.25246e-08
+  worst |n0.(d-c)|/|d| 1.25246e-08
+  worst |n1.(d+c)|/|d| 1.25246e-08
   flat edges (skipped) 0
   opposed normals      0
   edges over tolerance 0  PASS
 
 Test 5: Orthogonality residual sweep  (torus 20x10)
   edges checked        1200
-  worst |n0.(d-c)|     4.38423e-08
-  worst |n1.(d+c)|     4.38423e-08
+  worst |n0.(d-c)|/|d| 4.38423e-08
+  worst |n1.(d+c)|/|d| 4.38423e-08
   flat edges (skipped) 0
   opposed normals      0
   edges over tolerance 0  PASS
@@ -152,6 +152,7 @@ Torus:
 |    32 |     2048 |    5.264e-02 |    7.186e-04 |     3.92 |     8.27 |     73.3x |
 |    64 |     8192 |    1.323e-02 |    8.840e-05 |     3.98 |     8.13 |    149.7x |
 +-------+----------+--------------+--------------+----------+----------+-----------+
+
 
 ```
 A single improvement ratio describes one row of the table rather than the method: it multiplies by about four with every refinement, from 5x at the coarsest resolution to over 1200x at the finest. The convergence orders are the checkable claim, which is why the sweep prints per-refinement drop factors.
