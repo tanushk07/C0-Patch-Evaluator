@@ -284,11 +284,11 @@ Max error against the true surface, across control-mesh resolutions:
 
 | Triangles | Flat max error | Nagata max error |
 |----------:|---------------:|-----------------:|
-| 32        | 0.3210         | 0.06066          |
-| 128       | 0.09121        | 0.004534         |
-| 512       | 0.02375        | 0.0002890        |
-| 2048      | 0.006002       | 0.00001812       |
-| 8192      | 0.001505       | 0.000001192      |
+|        24 | 0.3210         |          0.06066 |
+|       112 | 0.09121        |         0.004534 |
+|       480 | 0.02375        |        0.0002890 |
+|      1984 | 0.006002       |       0.00001816 |
+|      8064 | 0.001505       |      0.000001164 |
 
 > Flat error falls about 4x per resolution doubling (order $h^2$); Nagata error
 > on the sphere falls about 16x (order $h^4$). Nagata at 112 triangles is already

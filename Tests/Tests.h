@@ -87,7 +87,7 @@ public:
 
     static bool Test4_Accuracy(const Mesh& mesh, const ErrorMetric &Error, int sampleN = 20)
     {
-        cout << "\nTest 4: Mesh accuracy  "
+        cout << "\nTest 4: Mesh accuracy  ("
              << ", " << mesh.triangles.size() << " triangles, "
              << sampleN << " samples across the whole triangle's parameter grid)\n";
 

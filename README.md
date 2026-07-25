@@ -20,7 +20,7 @@ Error against the true surface, measured as the maximum distance from the analyt
 | 1984      | 0.006002       | 0.00001812       |
 | 8064      | 0.001505       | 0.000001192      |
 
-Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 112 triangles (0.0045) is already more accurate than flat triangles at 1984 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
+On this Surface, Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 112 triangles (0.0045) is already more accurate than flat triangles at 1984 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
 
 **Torus (centerline radius 5, tube radius 3):**
 
@@ -166,7 +166,7 @@ A single improvement ratio describes one row of the table rather than the method
 
 ## Scope and notes
 
-This implements the **C0** patch only (position-continuous across shared edges). The G1 extension (tangent-plane continuity) is not implemented; C0 was the requested scope and is the foundation G1 builds on. See `NOTES.md` for the coefficient derivation, the C0-vs-G1 distinction, a sign discrepancy found between the source papers, and known limitations.
+This implements the **C0** patch only (position-continuous across shared edges). The G1 extension (tangent-plane continuity) is not implemented; C0 was the requested scope and is the foundation G1 builds on. See [Docs/Notes.md](Docs/Notes.md) for the coefficient derivation, the C0-vs-G1 distinction, a sign discrepancy found between the source papers, and known limitations.
 
 ## Reference
 
