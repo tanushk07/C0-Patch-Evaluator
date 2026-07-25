@@ -26,9 +26,11 @@ public:
             int s = edges[e][0], t = edges[e][1];
             Vector3 d = verts[t] - verts[s];
             Vector3 c = Evaluator::Curvature(d, norms[s], norms[t]);
-
-            float e1 = std::abs(norms[s].dot(d - c));
-            float e2 = std::abs(norms[t].dot(d + c));
+            double len = d.length();
+            if (len <= 0.0) { ok = false; continue; }
+            
+            double e1 = std::abs(norms[s].normalize().dot(d - c)) / len;
+            double e2 = std::abs(norms[t].normalize().dot(d + c)) / len;
             bool pass = (e1 < TOL && e2 < TOL);
             ok &= pass;
 
@@ -107,7 +109,7 @@ public:
     {
         cout << "\nTest 5: Orthogonality residual sweep  (" << name << ")\n";
  
-        float worstE0 = 0.0f, worstE1 = 0.0f;
+        double worstE0 = 0.0f, worstE1 = 0.0f;
         long long checked = 0, failed = 0, parallel = 0, antiparallel = 0;
  
         for (const auto& t : mesh.triangles)
@@ -123,9 +125,10 @@ public:
  
                 if (st == CurvatureStatus::Parallel)     { parallel++;     continue; }
                 if (st == CurvatureStatus::Antiparallel) { antiparallel++; continue; }
- 
-                float e0 = std::abs(mesh.normals[s].normalize().dot(d - c));
-                float e1 = std::abs(mesh.normals[f].normalize().dot(d + c));
+                double len = d.length();
+                if (len <= 0.0) continue;
+                double e0 = std::abs(mesh.normals[s].normalize().dot(d - c)) / len;
+                double e1 = std::abs(mesh.normals[f].normalize().dot(d + c)) / len;
  
                 worstE0 = std::max(worstE0, e0);
                 worstE1 = std::max(worstE1, e1);
