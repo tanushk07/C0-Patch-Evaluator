@@ -18,9 +18,13 @@ set(C0EVAL_DOCS
         README.md
         Docs/comparison.png
         Docs/Notes.md
+        Docs/Verification.md
         Docs/edge_curve.svg
         Docs/param_triangle.svg
         Docs/torus_metric.svg
+        Docs/validation_closure.svg
+        Docs/validation_scale.svg
+        Docs/validation_singular.svg
 )
 
 add_executable(C0Eval ${C0EVAL_SOURCES})

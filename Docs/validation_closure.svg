@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300">
+<rect width="720" height="300" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif">
+<text x="180" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#A6301A">Before</text>
+<text x="540" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#0B6E7A">After</text>
+<line x1="360" y1="12" x2="360" y2="288" stroke="#DCE3E7" stroke-width="1.5"/>
+
+<text x="180" y="52" text-anchor="middle" font-size="12.5" fill="#4A5C68">seam: j &#8804; sectors makes two vertices at one place</text>
+<path d="M188.4 96.3 A 46 46 0 1 1 171.6 96.3" fill="none" stroke="#A6301A" stroke-width="2"/>
+<circle cx="171.6" cy="96.3" r="5" fill="#A6301A"/>
+<circle cx="188.4" cy="96.3" r="5" fill="#A6301A"/>
+<circle cx="219.8" cy="118" r="3.5" fill="#7C8B95"/>
+<circle cx="207.4" cy="156" r="3.5" fill="#7C8B95"/>
+<circle cx="152.6" cy="156" r="3.5" fill="#7C8B95"/>
+<circle cx="140.2" cy="118" r="3.5" fill="#7C8B95"/>
+<text x="180" y="84" text-anchor="middle" font-size="11" fill="#A6301A" font-family="ui-monospace, monospace">gap</text>
+<text x="180" y="196" text-anchor="middle" font-size="12.5" font-weight="600" fill="#A6301A" font-family="ui-monospace, monospace">128 boundary edges</text>
+
+<text x="540" y="52" text-anchor="middle" font-size="12.5" fill="#4A5C68">(j + 1) % sectors wraps the last onto the first</text>
+<circle cx="540" cy="142" r="46" fill="none" stroke="#0B6E7A" stroke-width="2"/>
+<circle cx="540" cy="96" r="5" fill="#0B6E7A"/>
+<circle cx="579.8" cy="118" r="3.5" fill="#7C8B95"/>
+<circle cx="567.4" cy="156" r="3.5" fill="#7C8B95"/>
+<circle cx="512.6" cy="156" r="3.5" fill="#7C8B95"/>
+<circle cx="500.2" cy="118" r="3.5" fill="#7C8B95"/>
+<text x="540" y="196" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0B6E7A" font-family="ui-monospace, monospace">0 boundary edges</text>
+
+<line x1="20" y1="214" x2="700" y2="214" stroke="#DCE3E7" stroke-width="1"/>
+
+<text x="180" y="238" text-anchor="middle" font-size="12.5" fill="#4A5C68">pole: a whole row collapses to one point</text>
+<polygon points="168,254 174,254 130,290" fill="#FBEAE5" stroke="#A6301A" stroke-width="1"/>
+<polygon points="174,254 180,254 160,290" fill="#FBEAE5" stroke="#A6301A" stroke-width="1"/>
+<polygon points="180,254 186,254 200,290" fill="#FBEAE5" stroke="#A6301A" stroke-width="1"/>
+<polygon points="186,254 192,254 230,290" fill="#FBEAE5" stroke="#A6301A" stroke-width="1"/>
+<text x="270" y="276" font-size="12.5" font-weight="600" fill="#A6301A" font-family="ui-monospace, monospace">64 slivers</text>
+
+<text x="540" y="238" text-anchor="middle" font-size="12.5" fill="#4A5C68">one pole vertex, one triangle fan</text>
+<polygon points="540,254 490,290 515,290" fill="#E4F2F3" stroke="#0B6E7A" stroke-width="1"/>
+<polygon points="540,254 515,290 540,290" fill="#E4F2F3" stroke="#0B6E7A" stroke-width="1"/>
+<polygon points="540,254 540,290 565,290" fill="#E4F2F3" stroke="#0B6E7A" stroke-width="1"/>
+<polygon points="540,254 565,290 590,290" fill="#E4F2F3" stroke="#0B6E7A" stroke-width="1"/>
+<circle cx="540" cy="254" r="5" fill="#0B6E7A"/>
+<text x="622" y="276" font-size="12.5" font-weight="600" fill="#0B6E7A" font-family="ui-monospace, monospace">0 slivers</text>
+</g>
+</svg>

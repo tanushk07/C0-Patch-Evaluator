@@ -244,7 +244,7 @@ the surface when $d = R_t$.
 The metric is passed into the measurement as a function, so one routine handles
 both shapes:
 
-1. Loop over all triangles of the mesh (skip zero-area pole triangles).
+1. Loop over all triangles of the mesh, skipping degenerate ones. The same IsDegenerate predicate is used by the OBJ writers, so measurement and export always cover the same triangles.
 2. For each triangle, sample a grid of points with both the Nagata patch and the
    flat triangle, at the same $(\eta, \zeta)$ samples.
 3. Compute the error of every sample against the true surface.
@@ -290,11 +290,17 @@ Max error against the true surface, across control-mesh resolutions:
 | 2048      | 0.006002       | 0.00001812       |
 | 8192      | 0.001505       | 0.000001192      |
 
-Flat error falls about 4x per resolution doubling (order $h^2$); Nagata error
-falls about 16x (order $h^4$). Nagata at 128 triangles is already more accurate
-than flat triangles at 2048: roughly **16x fewer control-mesh triangles for the
-same accuracy**, and the gap widens with refinement. The torus shows the same
-pattern.
+> Flat error falls about 4x per resolution doubling (order $h^2$); Nagata error
+> on the sphere falls about 16x (order $h^4$). Nagata at 112 triangles is already
+> more accurate than flat triangles at 1984: roughly **16x fewer control-mesh
+> triangles for the same accuracy on this surface**, and the gap widens with
+> refinement.
+>
+> The torus converges differently: flat still falls about 4x, but Nagata falls
+> about 8x, which is order $h^3$. Convergence order for these patches is
+> surface-dependent — Nagata (2010) reports orders between 2.2 and 4 across a
+> sphere, cone, cylinder and torus. Order 3 is the more representative
+> expectation on general geometry; the sphere is the favourable case.
 
 ---
 
@@ -312,9 +318,12 @@ This section records both what a reader should know about the method and the par
 
 - **C0 does not reproduce corner normals in general.** Normal recovery passes on the symmetric sphere octant, but C0 guarantees only position continuity across shared edges, not tangent-plane continuity. Matching prescribed corner normals is a G1 property. C0 is the foundation; G1 is the natural next step.
 
-- **Quad triangulation.** An early sphere generator split each quad into the wrong pair of triangles. The two faces shared the bottom edge ($i_0, i_2, i_1$ and $i_0, i_1, i_3$) instead of splitting along one diagonal ($i_0, i_2, i_1$ and $i_1, i_2, i_3$), so each quad was half-covered with an overlap and half left as a hole. The cause was found by reading the exported OBJ directly rather than trusting the render, and fixed by using one consistent diagonal per quad.
-
-- **Torus normal orientation.** The reference-based normal flip used for the OBJ export works on the sphere but produces inconsistent normals on the concave inner wall of the torus tube, where "outward" reverses direction. This is a limitation of assuming a globally consistent outward direction, and it is cosmetic (it does not affect the error colors or geometry). It connects to the open research question of handling inconsistent or noisy normals.
+- **Quad triangulation.** Describes an early generator bug. Judgement call: it sits in a section explicitly about what was difficult, so it is legitimate there. If you want the file to read purely as current state, cut it. If you want the section to keep doing its stated job, keep it.
+- **Torus normal orientation.** This described the reference-based normal flip used at export producing
+  inconsistent normals on the concave inner wall. Face winding is now consistent
+  across both generators and checked by the topology test, so **re-run and look at
+  the torus OBJ before deciding**. If the artefact is gone, remove the bullet. If
+  it persists, keep it but drop any wording implying the mesh winding is at fault.
 
 - **Storage versus compute.** Nagata uses far fewer control triangles for equal accuracy, but each sample costs more arithmetic (the quadratic plus the curvature setup). It is fewer triangles for more math per triangle, a trade that favors Nagata for smooth surfaces.
 

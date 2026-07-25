@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" width="720" height="260">
+<rect width="720" height="260" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif">
+<text x="360" y="26" text-anchor="middle" font-size="14" font-weight="600" fill="#A6301A">With abs() &#8212; one branch swallows both ends</text>
+<rect x="100" y="58" width="30" height="22" fill="#FBEAE5" stroke="#A6301A"/>
+<rect x="590" y="58" width="30" height="22" fill="#FBEAE5" stroke="#A6301A"/>
+<line x1="100" y1="69" x2="620" y2="69" stroke="#7C8B95" stroke-width="1.5"/>
+<text x="115" y="50" text-anchor="middle" font-size="12" fill="#A6301A" font-weight="600">Parallel</text>
+<text x="605" y="50" text-anchor="middle" font-size="12" fill="#A6301A" font-weight="600">Parallel</text>
+<text x="100" y="98" text-anchor="middle" font-size="12" fill="#4A5C68" font-family="ui-monospace, monospace">cs = -1</text>
+<text x="360" y="98" text-anchor="middle" font-size="12" fill="#4A5C68" font-family="ui-monospace, monospace">cs = 0</text>
+<text x="620" y="98" text-anchor="middle" font-size="12" fill="#4A5C68" font-family="ui-monospace, monospace">cs = +1</text>
+<text x="360" y="124" text-anchor="middle" font-size="12.5" fill="#A6301A">opposed normals labelled parallel; second branch unreachable</text>
+
+<line x1="40" y1="148" x2="680" y2="148" stroke="#DCE3E7" stroke-width="1.5"/>
+
+<text x="360" y="178" text-anchor="middle" font-size="14" font-weight="600" fill="#0B6E7A">Sign kept &#8212; each end reaches its own branch</text>
+<rect x="100" y="210" width="30" height="22" fill="#F1EFFB" stroke="#5B4BC4"/>
+<rect x="590" y="210" width="30" height="22" fill="#E4F2F3" stroke="#0B6E7A"/>
+<line x1="100" y1="221" x2="620" y2="221" stroke="#7C8B95" stroke-width="1.5"/>
+<text x="115" y="202" text-anchor="middle" font-size="12" fill="#5B4BC4" font-weight="600">Antiparallel</text>
+<text x="605" y="202" text-anchor="middle" font-size="12" fill="#0B6E7A" font-weight="600">Parallel</text>
+<text x="100" y="250" text-anchor="middle" font-size="12" fill="#4A5C68" font-family="ui-monospace, monospace">cs = -1</text>
+<text x="620" y="250" text-anchor="middle" font-size="12" fill="#4A5C68" font-family="ui-monospace, monospace">cs = +1</text>
+</g>
+</svg>

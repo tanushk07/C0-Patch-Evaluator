@@ -5,7 +5,7 @@ Reconstructing smooth curved surfaces from a triangle mesh using **C0 Nagata pat
 ## Documentation
 
 **[Docs/Notes.md](Docs/Notes.md)** is the full write-up behind this code: the motivation, the derivation of the patch coefficients from first principles, the verification tests, the error metrics for the sphere and torus, the resolution experiment, and the findings and known limitations.
-
+**[Docs/Verification.md](Docs/Verification.md)** covers correctness: what each test checks, why the mesh and solver are built the way they are, and the current measurements.
 ## Headline result
 
 Error against the true surface, measured as the maximum distance from the analytic shape, across mesh resolutions. Both methods use the same control mesh and the same sampling; only flat-vs-curved differs.
@@ -15,12 +15,12 @@ Error against the true surface, measured as the maximum distance from the analyt
 | Triangles | Flat max error | Nagata max error |
 |----------:|---------------:|-----------------:|
 | 32        | 0.3210         | 0.06066          |
-| 128       | 0.09121        | 0.004534         |
-| 512       | 0.02375        | 0.0002890        |
-| 2048      | 0.006002       | 0.00001812       |
-| 8192      | 0.001505       | 0.000001192      |
+| 112       | 0.09121        | 0.004534         |
+| 480       | 0.02375        | 0.0002890        |
+| 1984      | 0.006002       | 0.00001812       |
+| 8064      | 0.001505       | 0.000001192      |
 
-Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 128 triangles (0.0045) is already more accurate than flat triangles at 2048 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
+Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata error falls about 16x (order h⁴). **Nagata at 112 triangles (0.0045) is already more accurate than flat triangles at 1984 (0.0060): roughly 16x fewer control-mesh triangles for the same accuracy, and the gap widens as the mesh refines.**
 
 **Torus (centerline radius 5, tube radius 3):**
 
@@ -32,7 +32,9 @@ Flat-triangle error falls about 4x per resolution doubling (order h²); Nagata e
 | 2048      | 0.05264        | 0.0007186        |
 | 8192      | 0.01323        | 0.00008845       |
 
-Same pattern as the sphere. The absolute numbers are larger only because the torus is a bigger shape (radii 5 and 3, not a unit surface); the convergence behavior is what matters.
+The absolute numbers are larger because the torus is a bigger shape (radii 5 and 3, not a unit surface). The convergence behaviour also differs: flat error falls about 4x per doubling (order h^2), while Nagata error falls about 8x rather than 16x, which is order h^3.
+
+Convergence order for these patches depends on the surface. Nagata (2010) tests a sphere, cone, cylinder and torus and reports orders between 2.2 and 4; Morita et al. (2010) measured 3.08 on an aspheric lens. The sphere is the favourable case, being a quadratic surface of constant curvature, so order 3 is the more representative expectation on general geometry.
 
 ## Visual comparison
 
@@ -49,7 +51,7 @@ cmake --build cmake-build-debug --config Debug
 ```
 
 Running the program:
-1. Runs four correctness tests on a single patch and a sphere mesh.
+1. Runs eight correctness tests covering a single patch, mesh topology, and a residual sweep across every edge.
 2. Prints flat-vs-Nagata max error across resolutions for a sphere and a torus.
 3. Writes four error-colored OBJ files (sphere and torus, flat and Nagata) to the working directory.
 
@@ -58,20 +60,20 @@ Open the colored OBJ files in a viewer that reads per-vertex color (for example 
 ## What is implemented
 
 - C0 Nagata patch evaluation: surface point and surface normal at any parameter `(eta, zeta)`.
-- Four correctness tests: curvature orthogonality, vertex recovery, normal recovery, and accuracy against a known analytic surface.
+- Eight correctness tests: curvature orthogonality, vertex recovery, normal recovery, convergence across resolutions, an orthogonality residual sweep over every edge of a mesh, and topological validation (Euler characteristic, boundary edges, manifoldness, degenerate triangles, winding) on the sphere and the torus.
 - A shape-independent error metric (passed in as a function), so the same code measures both the sphere and the torus.
 - Flat-vs-Nagata error comparison across mesh resolutions.
 - Error-colored OBJ export, with reconstructed normals on the Nagata meshes.
 
 ## Verification
 
-All four tests pass on the symmetric sphere octant: curvature orthogonality, vertex recovery, normal recovery, and accuracy against the analytic sphere.
+All eight tests pass on the sphere and the torus.
 
 <details>
 <summary>Full program output</summary>
 
 ```
- Test 1: Orthogonality check
+  Test 1: Orthogonality check
   v0->v1:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
   v1->v2:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
   v0->v2:  |n_s.(d-c)|=0  |n_e.(d+c)|=0  OK
@@ -86,42 +88,79 @@ Test 3: Normal recovery at vertices
   n1 (0,1):  |1-|dot||=0  PASS
   n2 (1,1):  |1-|dot||=0  PASS
 
-Test 4: Mesh accuracy (2048 triangles, 20 samples across the parameter grid)
+Test 4: Mesh accuracy  , 1984 triangles, 20 samples across the whole triangle's parameter grid)
 Samples:           458304
-Max flat error:    0.00600249
-Max Nagata error:  1.81198e-05
+Max flat error:    0.00600242
+Max Nagata error:  1.81583e-05
 Avg flat error:    0.00233273
-Avg Nagata error:  2.47684e-06
-Improvement ratio: 331.266x
+Avg Nagata error:  2.49727e-06
+Ratio at this resolution: 330.561x
   Nagata < flat?     PASS
 
-Results: 4/4 tests passed
+Test 5: Orthogonality residual sweep  (sphere 32x32)
+  edges checked        5952
+  worst |n0.(d-c)|     1.25246e-08
+  worst |n1.(d+c)|     1.25246e-08
+  flat edges (skipped) 0
+  opposed normals      0
+  edges over tolerance 0  PASS
+
+Test 5: Orthogonality residual sweep  (torus 20x10)
+  edges checked        1200
+  worst |n0.(d-c)|     4.38423e-08
+  worst |n1.(d+c)|     4.38423e-08
+  flat edges (skipped) 0
+  opposed normals      0
+  edges over tolerance 0  PASS
+
+Test 6: Topology  (sphere 32x32)
+  V=994  E=2976  F=1984
+  Euler characteristic 2  (expected 2)  PASS
+  boundary edges       0  PASS
+  non-manifold edges   0  PASS
+  degenerate triangles 0  PASS
+  inward-wound faces   0  PASS
+
+Test 6: Topology  (torus 20x10)
+  V=200  E=600  F=400
+  Euler characteristic 0  (expected 0)  PASS
+  boundary edges       0  PASS
+  non-manifold edges   0  PASS
+  degenerate triangles 0  PASS
+  inward-wound faces   0  PASS
+
+Results: 8/8 tests passed
 
 Sphere:
-res     triangles       maxFlat         maxNagata
-4       32              0.320982        0.0606602
-8       128             0.0912061       0.00453424
-16      512             0.0237502       0.000288963
-32      2048            0.00600249      1.81198e-05
-64      8192            0.00150472      1.19209e-06
++-------+----------+--------------+--------------+----------+----------+-----------+
+|   res |     tris |      maxFlat |    maxNagata |   flat/x |    nag/x |     ratio |
++-------+----------+--------------+--------------+----------+----------+-----------+
+|     4 |       24 |    3.210e-01 |    6.066e-02 |        - |        - |      5.3x |
+|     8 |      112 |    9.121e-02 |    4.534e-03 |     3.52 |    13.38 |     20.1x |
+|    16 |      480 |    2.375e-02 |    2.889e-04 |     3.84 |    15.69 |     82.2x |
+|    32 |     1984 |    6.002e-03 |    1.816e-05 |     3.96 |    15.91 |    330.6x |
+|    64 |     8064 |    1.505e-03 |    1.164e-06 |     3.99 |    15.60 |   1292.6x |
++-------+----------+--------------+--------------+----------+----------+-----------+
 
 Torus:
-res     triangles       maxFlat         maxNagata
-4       32              2.46012         0.485282
-8       128             0.765181        0.0510187
-16      512             0.206297        0.00594068
-32      2048            0.0526421       0.000718594
-64      8192            0.0132301       8.84533e-05
++-------+----------+--------------+--------------+----------+----------+-----------+
+|   res |     tris |      maxFlat |    maxNagata |   flat/x |    nag/x |     ratio |
++-------+----------+--------------+--------------+----------+----------+-----------+
+|     4 |       32 |    2.460e+00 |    4.853e-01 |        - |        - |      5.1x |
+|     8 |      128 |    7.652e-01 |    5.102e-02 |     3.22 |     9.51 |     15.0x |
+|    16 |      512 |    2.063e-01 |    5.941e-03 |     3.71 |     8.59 |     34.7x |
+|    32 |     2048 |    5.264e-02 |    7.186e-04 |     3.92 |     8.27 |     73.3x |
+|    64 |     8192 |    1.323e-02 |    8.840e-05 |     3.98 |     8.13 |    149.7x |
++-------+----------+--------------+--------------+----------+----------+-----------+
+
 ```
-
-The 331x figure in Test 4 is the max-error ratio at a single resolution (2048 triangles). The more meaningful comparison is triangle count for equal accuracy, which is about 16x.
-
+A single improvement ratio describes one row of the table rather than the method: it multiplies by about four with every refinement, from 5x at the coarsest resolution to over 1200x at the finest. The convergence orders are the checkable claim, which is why the sweep prints per-refinement drop factors.
 </details>
 
 ## Project layout
 
 - `Core/` — evaluator (`Evaluator.cpp`, `Evaluator.h`) and entry point (`Main.cpp`)
-- `Tests/` — the four correctness tests
+- `Tests/` — the correctness and validation tests
 - `Utils/` — vector math, mesh structs, sphere and torus mesh generators, error-stats struct
 - `Docs/`: [Notes.md](Docs/Notes.md) (full derivation and findings), plus the figures used in this README
 
