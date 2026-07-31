@@ -5,7 +5,9 @@ Reconstructing smooth curved surfaces from a triangle mesh using **C0 Nagata pat
 ## Documentation
 
 **[Docs/Notes.md](Docs/Notes.md)** is the full write-up behind this code: the motivation, the derivation of the patch coefficients from first principles, the verification tests, the error metrics for the sphere and torus, the resolution experiment, and the findings and known limitations.
+
 **[Docs/Verification.md](Docs/Verification.md)** covers correctness: what each test checks, why the mesh and solver are built the way they are, and the current measurements.
+
 ## Headline result
 
 Error against the true surface, measured as the maximum distance from the analytic shape, across mesh resolutions. Both methods use the same control mesh and the same sampling; only flat-vs-curved differs.
